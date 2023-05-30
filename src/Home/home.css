@@ -1,0 +1,35 @@
+.array{
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    /* transform: scaleY(0.5); */
+    align-items: flex-start;
+    width: 100%;
+    justify-content: center;
+  }
+  .array-bar{
+    width: 6px;
+    margin: 0 3px;
+    background-color: #282c34;
+    transition: all 0.1s ease;
+    border: 0px solid #f2cbcb84;
+  }
+  /* f2cbcb84 */
+  /* 282c34 */
+  .container{
+    height: 500px;
+    width : 1200px;
+    margin: auto;
+    box-shadow: 0px 0px 10px 0px #282c34;
+  }
+  .generate{
+    padding: 1rem;
+    font-size: 20px;
+    transition: all 0.2s ease;
+    color : #282c34;
+    font-weight: 800;
+  }
+  .generate:hover{
+    color: #f7f7f7;
+    background-color: #282c34;
+  }
