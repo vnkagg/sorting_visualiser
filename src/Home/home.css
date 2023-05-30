@@ -5,14 +5,15 @@
     /* transform: scaleY(0.5); */
     align-items: flex-start;
     width: 100%;
+    transition: all 0.5s ease;
     justify-content: center;
   }
   .array-bar{
-    width: 6px;
-    margin: 0 3px;
-    background-color: #282c34;
+    width: 12px;
+    margin: 0 6px;
+    background-color: #ffffff;
     transition: all 0.1s ease;
-    border: 0px solid #f2cbcb84;
+    /* border: 1px solid black; */
   }
   /* f2cbcb84 */
   /* 282c34 */
@@ -20,16 +21,16 @@
     height: 500px;
     width : 1200px;
     margin: auto;
-    box-shadow: 0px 0px 10px 0px #282c34;
+    box-shadow: 0px 0px 10px 0px #ffffff;
   }
   .generate{
     padding: 1rem;
     font-size: 20px;
     transition: all 0.2s ease;
-    color : #282c34;
+    color : #323437;
     font-weight: 800;
   }
   .generate:hover{
     color: #f7f7f7;
-    background-color: #282c34;
+    background-color: #323437;
   }

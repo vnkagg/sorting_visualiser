@@ -1,10 +1,10 @@
 .Header{
     width: 100%;
-    color: #f2cbcb84;
+    /* color: #f2cbcb84; */
     display: flex;
     justify-content: space-between;
     height: fit-content;
-    background-color: #282c34;
+    background-color: #323437;
     /* border-bottom: 1px solid black; */
 }   
 /* f2cbcb84 */
@@ -15,16 +15,19 @@
     flex-direction: column;
     justify-content: flex-end;
 }
+
 .controlOption{
     cursor: pointer;
     font-size: 25px;
     font-weight: 600;
-    color: #f2cbcb84;
+    color: #dbb941;
+    /* color: #f2cbcb84; */
     margin-left: 1rem;
     transition: all 0.1s ease;
 }
 .controlOption:hover{
-    color : #f2cbcbfe;
+    /* color : #f2cbcbfe; */
+    color : #dbb941;
 }
 .controlOptions{
     display: flex;
@@ -54,14 +57,16 @@
     cursor: pointer;
     font-size: 25px;
     font-weight: 600;
-    color: #f2cbcb84;
+    color: #dbb941;
     transition: all 0.1s ease;
 }
 .listItem:hover{
-    color : #f2cbcb;
+    color : #f7f1df;
+    /* color : #f2cbcb; */
 }
 h1{
     font-size: 45px;
     font-weight: 900;
-    color: #f2cbcbb8;
+    color: #ffffff;
+    /* color: #f2cbcbb8; */
 }

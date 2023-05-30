@@ -7,7 +7,8 @@ export default class Home extends React.Component{
         super(props);   
         this.state = {
             array : [],
-            max : -2
+            max : -2,
+            settle : -2
         };
     }
     componentDidMount() {
@@ -15,7 +16,7 @@ export default class Home extends React.Component{
     }
     resetArray = () => {
         const array = [];
-        for(let i = 0; i < 100; i++){
+        for(let i = 0; i < 50; i++){
             array.push(this.randIntFromRange(50,1000));
         }
         this.setState({array});
@@ -54,21 +55,22 @@ export default class Home extends React.Component{
                 for (let j = 0; j < array.length; j++) {
                 if (k < animation[i][1].length) {
                     if (j === animation[i][1][k]) {
-                        this.setState({ max : j });
+                        this.setState({settle : j})
                         setTimeout(() => {
+                            this.setState({ max : j });
                             let temp = array[j];
                             array[j] = array[j + 1];
                             array[j + 1] = temp;
                             this.setState({ array: [...array]});
-                        }, k * 10);
+                        }, k * 100);
                         k++;
                     }
                 }
+                this.setState({max : -1});
                 }
             }, time);
-            time += animation[i][1].length * 10;
+            time += animation[i][1].length * 100;
         }
-        this.setState({max : -1});
       }
     render() {
     const {array} = this.state;
@@ -85,9 +87,9 @@ export default class Home extends React.Component{
                 <div className="array">
                         {array.map((value, index) => (
                                 (index == this.state.max + 1)
-                                ? <div className="array-bar" key={index} style={{ height: `${(value) / 2}px`, backgroundColor: "red"  }} />
-                                : <div className="array-bar" key={index} style={{ height: `${(value) / 2}px` }} />
-                                )
+                                ? <div className="array-bar" key={index} style={{ height: `${(value) / 2}px`, backgroundColor: "#f2cbcb84"  }} />
+                                : <div className="array-bar" key={index} style={{ height: `${(value) / 2}px`, backgroundCOlor: `${index === this.state.select ? "black" : "#282c34"}` }} />
+                            )
                         )}
                 </div>
             </div>

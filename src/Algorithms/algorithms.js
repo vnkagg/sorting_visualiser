@@ -1,3 +1,27 @@
+// export const mergeSort = array => {
+//     if(array.length < 2){
+//         return array;
+//     }
+//     return merge_sort(array);
+//     function merge_sort(arr) {
+//         if(arr.length < 2){
+//             return arr;
+//         }
+//         const mid = Math.floor(arr.length / 2);
+//         return merge(merge_sort(arr.slice(0, mid)), merge_sort(arr.slice(mid)));
+//     }
+//     function merge(arrL, arrR){
+//         let temp = [];
+//         while(arrL.length && arrR.length){
+//             if(arrL[0] < arrR[0]){
+//                 temp.push(arrL.shift());
+//             } else {
+//                 temp.push(arrR.shift())
+//             }
+//         }
+//         return [...temp, ...arrL, ...arrR];
+//     }
+// }
 export const mergeSort = array => {
     if(array.length < 2){
         return array;
