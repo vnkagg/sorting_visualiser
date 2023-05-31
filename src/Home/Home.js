@@ -7,35 +7,117 @@ export default class Home extends React.Component{
         super(props);   
         this.state = {
             array : [],
-            max : -2,
-            settle : -2
+            bubble : {
+                max : -2,
+                settle : -2,
+                pause : false
+            },
+            merge : {
+                Divisions : {
+                    left : [],
+                    right : []
+                },
+                Comparisons : {
+                    
+                }
+            },
+            sort : ""
         };
+    }
+    isPause(){
+        const pause = !this.state.pause;
+        this.setState({pause : pause});
     }
     componentDidMount() {
         this.resetArray();
     }
     resetArray = () => {
         const array = [];
-        for(let i = 0; i < 50; i++){
+        for(let i = 0; i < 25; i++){
             array.push(this.randIntFromRange(50,1000));
         }
         this.setState({array});
+        // console.log(this.state);
     }
     mergeSort = () => {
-        const arr = sortingAlgorithms.mergeSort(this.state.array);
-        this.setState({array : arr});
-    }
+        this.setState({sort : "merge"});
+        const {divisions, comparisons} = sortingAlgorithms.mergeSort(this.state.array);
+        console.log("divisions : ", divisions);
+        console.log("comparisons : ", comparisons);
+        // this.setState({array});
+        // animations -> divided, comparisons.
+        let array = [...this.state.array];
+        let time = 0;
+        // for(let i = 0; i < divisions.length - 1 ; i++){
+        //     setTimeout(() => {
+        //         this.setState(
+        //             { merge : { 
+        //                     Divisions : { 
+        //                         left : [...divisions[i][0]], 
+        //                         right : [...divisions[i][1]] 
+        //                     }
+        //                 } 
+        //             }
+        //         )
+        //     }, i*100);
+        // }
+        // time+=divisions.length*100;
+        // setTimeout(() => {
+        //     let arrayog = this.state.array;
+        //     for(let i = comparisons.length - 1; i>=0; i--){
+        //         setTimeout(() => {
+        //             const [smaller, larger] = comparisons[i];
+        //             let a = arrayog[smaller];
+        //             arrayog[smaller] = arrayog[larger];
+        //             arrayog[larger] = a;
+        //             this.setState({ array : arrayog });
+        //         }, i*10)
+        //     }
+        // }, time)
+      };
     bubbleSort = () => {
-        const result = sortingAlgorithms.bubbleSort(this.state.array);
-        this.try(result.animation);
-        // this.setState({array : result.sorted});
+        this.setState({sort : "bubble"});
+        let array = [...this.state.array];
+        const result = sortingAlgorithms.bubbleSort(array);
+        const animation = result.animation;
+        // console.log("animations array: ", animation);
+        let time = 0;
+        for (let i = 0; i < animation.length; i++) {
+            // while(this.state.pause){
+            //     console.log(this.state.pause);
+            // }
+            // setTimeout(() => {
+            // }, time);
+            setTimeout(() => {
+                let k = 0;
+                for (let j = 0; j < array.length; j++) {
+                    if (k < animation[i][1].length) {
+                        if (j === animation[i][1][k]) {
+                            setTimeout(() => {
+                                this.setState({ bubble : {max : j+1, settle : array.length - i - 1} });
+                                let temp = array[j];
+                                array[j] = array[j + 1];
+                                array[j + 1] = temp;
+                                this.setState({ array: [...array]});
+                            }, k * 200);
+                            k++;
+                        }
+                    }
+                }
+                this.setState({ bubble : { max : -2 }});
+            }, time);
+            time += animation[i][1].length * 200;
+        }
+          
     }
     insertionSort = () => {
         const arr = sortingAlgorithms.insertionSort(this.state.array);
+        this.setState({sort : "insertion"});
         this.setState({array : arr});
     }
     selectionSort = () => {
         const arr = sortingAlgorithms.selectionSort(this.state.array);
+        this.setState({sort : "selection"});
         this.setState({array : arr});
     }
     quickSort = () => {
@@ -45,33 +127,24 @@ export default class Home extends React.Component{
     randIntFromRange(min, max){
         return Math.floor(min + Math.random() * (max - min + 1)); 
     }
-    try(animation) {
-        let array = [...this.state.array];
-        console.log("animations array: ", animation);
-        let time = 0;
-        for (let i = 0; i < animation.length; i++) {
-            setTimeout(() => {
-                let k = 0;
-                for (let j = 0; j < array.length; j++) {
-                if (k < animation[i][1].length) {
-                    if (j === animation[i][1][k]) {
-                        this.setState({settle : j})
-                        setTimeout(() => {
-                            this.setState({ max : j });
-                            let temp = array[j];
-                            array[j] = array[j + 1];
-                            array[j + 1] = temp;
-                            this.setState({ array: [...array]});
-                        }, k * 100);
-                        k++;
-                    }
-                }
-                this.setState({max : -1});
-                }
-            }, time);
-            time += animation[i][1].length * 100;
-        }
-      }
+    // animateSort(animation) {
+    //     let array = [...this.state.array];
+    //     let time = 0;
+    //     for (let i = 0; i < animation.length; i++) {
+    //       while (this.state.pause) {
+    //         console.log(this.state.pause);
+    //       }
+    //       setTimeout(() => {
+    //         const [comparisons, mergedArray] = animation[i];
+    //         for (let j = 0; j < comparisons.length; j++) {
+    //           const [index, value] = comparisons[j];
+    //           array[index] = value;
+    //         }
+    //         this.setState({ array: [...array] });
+    //       }, time);
+    //       time += 200;
+    //     }
+    //   }
     render() {
     const {array} = this.state;
     return (
@@ -86,13 +159,39 @@ export default class Home extends React.Component{
             <div className="container">
                 <div className="array">
                         {array.map((value, index) => (
-                                (index == this.state.max + 1)
-                                ? <div className="array-bar" key={index} style={{ height: `${(value) / 2}px`, backgroundColor: "#f2cbcb84"  }} />
-                                : <div className="array-bar" key={index} style={{ height: `${(value) / 2}px`, backgroundCOlor: `${index === this.state.select ? "black" : "#282c34"}` }} />
+                                (this.state.sort === 'bubble')
+                                ? <div 
+                                    className={`array-bar ${index!==this.state.bubble.max ? "normal-bar" : ""}`} key={index} 
+                                    style={{ height: `${(value) / 2}px`, backgroundColor: `${index === this.state.bubble.max ? "#f2cbcb84" : index ===this.state.bubble.settle ? "white" :  "#282c34"}` }} 
+                                />
+                                : (this.state.sort === 'merge')
+                                ? <div 
+                                    className="array-bar" key={index} 
+                                    style={{
+                                            height: `${(value) / 2}px`, 
+                                            backgroundColor: 
+                                                `${this.state.merge.Divisions.left.includes(index)
+                                                     ? "#ffffff" 
+                                                     : this.state.merge.Divisions.left.includes(index)
+                                                     ? "#808080"
+                                                     : "#282c34"}`
+                                            }} 
+                                />
+                                : <div 
+                                    className="array-bar" key={index} 
+                                    style={{ height: `${(value) / 2}px` }} 
+                                />
                             )
                         )}
                 </div>
             </div>
         </>
-    )}
+            )
+    }
 }
+
+
+
+// (index == this.state.max + 1) ? 
+//                                 <div className="array-bar" key={index} style={{ height: `${(value) / 2}px`, backgroundColor: "#f2cbcb84"  }} /> :
+//                                 <div className="array-bar" key={index} style={{ height: `${(value) / 2}px`, backgroundColor: `${index === this.state.select ? "black" : "#282c34"}` }} />

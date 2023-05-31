@@ -1,5 +1,5 @@
 .App{
-  background-color: #323437;
-  /* background-color: #5d5b5b; */
+  min-width:1200px;
+  background-color: #5d5b5b;
   height: 100vh;
 }
