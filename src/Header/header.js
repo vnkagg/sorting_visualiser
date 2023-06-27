@@ -5,6 +5,16 @@ export default class Header extends React.Component{
     // constructor(props){
     //     // super(props);
     // }
+    constructor(props){
+        super(props);
+        this.state = {
+            slider : 100
+        }
+    }
+    handleChange = (event) => {
+        this.setState({slider : event.target.value});
+        this.props.speed(event.target.value);
+    }
     render() {
         return (
             <>
@@ -15,8 +25,16 @@ export default class Header extends React.Component{
                         <h1>SORTING VISUALISER</h1>
                         <div className="list">
                             <div className="controlOptions">
-                                <div className="controlOption">Animation Speed</div>
                                 <div className="controlOption" onClick={this.props.reset}>Create new Array</div>
+                                <div><input type="range" min="25" max="200" step="25" value={this.state.slider} onChange={this.handleChange} /></div>
+                                {/* <div className="controlOption">0.25x</div>
+                                <div className="controlOption">0.5x</div>
+                                <div className="controlOption">0.75x</div>
+                                <div className="controlOption">1x</div>
+                                <div className="controlOption">1.25x</div>
+                                <div className="controlOption">1.5x</div>
+                                <div className="controlOption">1.75x</div>
+                                <div className="controlOption">2x</div> */}
                             </div>
                             <div className="sorts">
                                 <div className="listItem" onClick={this.props.Sort.mergeSort}>Merge</div>

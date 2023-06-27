@@ -33,11 +33,18 @@
     margin: auto;
     box-shadow: 0px 0px 10px 0px #282c34;
   } 
+  .displayArr{
+    height: 500px;
+    width: 1200px;
+    margin: auto;
+    box-shadow: 0px 0px 10px 0px #282c34;
+  }
  .array-bar{
-    width: 24px;
-    margin: 0 12px;
+    width: 18px;
+    margin: 0 9px;
     background-color: #282c34;
     border: 0px solid #f2cbcb84;
+    transition: height 0.2s ease;
   }
 .normal-bar{
     transition: height 0.2s ease;

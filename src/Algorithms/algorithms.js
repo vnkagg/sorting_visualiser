@@ -1,246 +1,58 @@
-// export const mergeSort = array => {
-//     if(array.length < 2){
-//         return array;
-//     }
-//     return merge_sort(array);
-//     function merge_sort(arr) {
-//         if(arr.length < 2){
-//             return arr;
-//         }
-//         const mid = Math.floor(arr.length / 2);
-//         return merge(merge_sort(arr.slice(0, mid)), merge_sort(arr.slice(mid)));
-//     }
-//     function merge(arrL, arrR){
-//         let temp = [];
-//         while(arrL.length && arrR.length){
-//             if(arrL[0] < arrR[0]){
-//                 temp.push(arrL.shift());
-//             } else {
-//                 temp.push(arrR.shift())
-//             }
-//         }
-//         return [...temp, ...arrL, ...arrR];
-//     }
-// }
-
-
-
-
-
-
-
-// export const mergeSort = array => {
-//     console.log("mergeSort is called in algorithms.js");
-//     if(array.length < 2){
-//         console.log("The mergeSort (uppermost in algo.js) was terminated here because array < 2")
-//         return array;
-//     }
-//     function merge_sort(arr, l, r, animations) {
-//         if( l>=r ){
-//             console.log("l was >= r. the merge_sort was returned here");
-//             return;
-//         }
-//         //animations will have :
-//             // the array (merge function) merging is happening on
-//             // indexes being swapped
-//         // const mid = Math.floor(arr.length / 2);
-//         const mid = Math.floor((r - l)/2);
-//         const no_oftimes = arr.length/mid+1;
-//         console.log("mid : {mid}");
-//         console.log("animations.divisions.push worked");
-//         console.log("calling merge_sort recursively for the first time now...");
-//         animations.divisions.push(
-//             ([l, mid],
-//              [mid+1, r])
-//             );
-//             console.log("animations : ", animations);
-//         merge_sort(arr, l, mid, animations);
-//         console.log("the right merge_sort is being called for the first time right now...");
-//         merge_sort(arr, mid + 1, r, animations);
-//         console.log(`Merge sort is being called for the $(no_oftimes)`);
-//         merge(arr, l, mid, r, animations);
-//         // return;
-//         // return merge(merge_sort(arr.slice(0, mid)), merge_sort(arr.slice(mid)));
-//     }
-//     function merge(arr, start, mid, end, animations){
-//         let i = start;
-//         let j = mid+1;
-//         while(i<=mid && j<=end){
-//             if(arr[i]< arr[j]){
-//                 animations.comparisons.push([i, j]);
-//                 i++;
-//                 continue;
-//             }
-//             if(arr[j]<arr[i]){
-//                 animations.comparisons.push([j, i]);
-//                 let temp = arr[i];
-//                 arr[i]=arr[j];
-//                 arr[j]=temp;
-//                 j++;
-//                 continue;
-//             }
-//             i++; j++;
-//         }
-//     }
-//     let animations = {divisions : [], comparisons : []};
-//     merge_sort(array, 0, array.length-1, animations);
-//     return animations;
-// }
-
-
 export const mergeSort = array => {
-    if (array.length < 2) {
-      return array;
-    }
-  
     function merge_sort(arr, l, r, animations) {
       if (l >= r) {
         return;
       }
-  
       const mid = Math.floor((l + r) / 2);
-  
+      let division = [l, mid, r];
+      animations.divisions.push(division);
       merge_sort(arr, l, mid, animations);
       merge_sort(arr, mid + 1, r, animations);
       merge(arr, l, mid, r, animations);
+      return;
     }
   
     function merge(arr, start, mid, end, animations) {
-      let i = start;
-      let j = mid + 1;
-  
-      while (i <= mid && j <= end) {
-        if (arr[i] < arr[j]) {
-          animations.comparisons.push([j, i]);
+      let arrL = arr.slice(start, mid + 1);
+      let arrR = arr.slice(mid + 1, end + 1);
+      let i = 0;
+      let j = 0;
+      let k = start;
+      let mergedArr = [];
+      while (i < arrL.length && j < arrR.length) {
+        if (arrL[i] < arrR[j]) {
+          arr[k] = arrL[i];
+          mergedArr.push(start + i);
           i++;
         } else {
-          animations.comparisons.push([j, i]);
-          let temp = arr[i];
-          arr[i] = arr[j];
-          arr[j] = temp;
+          arr[k] = arrR[j];
+          mergedArr.push(mid+1 + j);
           j++;
         }
+        k++;
       }
+      while (i < arrL.length) {
+        arr[k] = arrL[i];
+        mergedArr.push(start + i);
+        i++;
+        k++;
+      }
+      while (j < arrR.length) {
+        arr[k] = arrR[j];
+        mergedArr.push(mid+1 + j);
+        j++;
+        k++;
+      }
+      animations.mergedArrays.push(mergedArr);
     }
   
-    let animations = { divisions: [], comparisons: [] };
+    let animations = { divisions: [], mergedArrays : [] };
     merge_sort(array, 0, array.length - 1, animations);
-    console.log(animations.comparisons);
+    console.log("sorted array", array);
+    console.log("merged arrays algo.js",animations.mergedArrays);
     return animations;
   };
   
-
-
-
-
-
-
-
-        // let temp = [];
-        // let i = 0;
-        // while(  (start+i)<=(mid) && (mid+i)<(end) ){
-        //     if(arr[i] < arr[mid+1]){
-        //         animations.comparisons.push((i, mid+i));
-        //         temp.push(arr[i]);
-        //     } else{
-        //         animations.comparisons.push((mid+i, i));
-        //         temp.push(arr[mid+i]);
-        //     }
-        //     i++;
-        // }
-        // while (start + i <= mid) {
-        //     temp.push(arr[start + i]);
-        //     i++;
-        // }
-        // while (mid + i + 1 <= end) {
-        //     temp.push(arr[mid + i + 1]);
-        //     i++;
-        // }
-        // // Update the original array with the sorted elements
-        // for (let j = 0; j < temp.length; j++) {
-        //     arr[start + j] = temp[j];
-        // }
-        // jahan se bhi chota mila, wahan ka pointer aage badao +
-        // agar right se chota mila toh swap bhi karna hai
-        // left se chota mila thha to swap nahi karna hai
-        // if(mid-start + 1 > end-mid){
-        //     arr = [...arr.slice(0, start), ...temp, ...arr.slice(end-mid +1, mid-start+2), ...arr.slice(end+1, arr.length-1)]
-        // } else{
-        //     arr = [...arr.slice(0, start), ...temp, ...arr.slice(end+1, arr.length-1)]
-        // }
-        // Copy remaining elements from the subarrays if any
-        // while(arrL.length && arrR.length){
-        //     if(arrL[0] < arrR[0]){
-
-        //         temp.push(arrL.shift());
-        //     } else {
-        //         temp.push(arrR.shift())
-        //     }
-        // }
-        // return [...temp, ...arrL, ...arrR];
-
-// Merge Sort Algorithm
-// export const mergeSort = array => {
-//     if (array.length < 2) {
-//       return array;
-//     }
-//     return mergeSortHelper(array, []);
-//   };
-  
-//   function mergeSortHelper(arr, animation) {
-//     if (arr.length < 2) {
-//       return [arr, []];
-//     }
-//     const mid = Math.floor(arr.length / 2);
-//     const left = arr.slice(0, mid);
-//     const right = arr.slice(mid);
-  
-//     const [animationL, arrL] = mergeSortHelper(left, animation);
-//     const [animationR, arrR] = mergeSortHelper(right, animation);
-    
-//     const [animation_, arr_] = merge(left, right, [...arrL, ...arrR], [...animationL, ...animationR]);
-  
-//     return [animation, arr];
-//   }
-  
-//   function merge(left, right, arr, animation) {
-//     let i = 0;
-//     let j = 0;
-//     let k = 0;
-  
-//     while (i < left.length && j < right.length) {
-//       if (left[i] < right[j]) {
-//         arr[k] = left[i];
-//         i++;
-//       } else {
-//         arr[k] = right[j];
-//         j++;
-//       }
-//       k++;
-//     }
-  
-//     while (i < left.length) {
-//       arr[k] = left[i];
-//       i++;
-//       k++;
-//     }
-  
-//     while (j < right.length) {
-//       arr[k] = right[j];
-//       j++;
-//       k++;
-//     }
-  
-//     // Store the comparisons for animation
-//     const comparisons = [];
-//     for (let m = 0; m < arr.length; m++) {
-//       comparisons.push([m, arr[m]]);
-//     }
-//     animation.push(comparisons);
-//     return([arr, animation]);
-//   }
-  
-
 export const bubbleSort = array => {
     let animationDetails = [];
     let duplicate = [...array];
