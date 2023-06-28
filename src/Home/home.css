@@ -44,7 +44,7 @@
     margin: 0 9px;
     background-color: #282c34;
     border: 0px solid #f2cbcb84;
-    transition: height 0.2s ease;
+    /* transition: height 0.2s ease; */
   }
 .normal-bar{
     transition: height 0.2s ease;

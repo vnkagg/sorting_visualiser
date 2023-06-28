@@ -13,7 +13,7 @@ export default class Header extends React.Component{
     }
     handleChange = (event) => {
         this.setState({slider : event.target.value});
-        this.props.speed(event.target.value);
+        this.props.speed(parseInt(event.target.value));
     }
     render() {
         return (
