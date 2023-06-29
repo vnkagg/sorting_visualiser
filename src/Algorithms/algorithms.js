@@ -58,24 +58,30 @@ export const mergeSort = (array) => {
   };
   
 export const bubbleSort = array => {
-    let animationDetails = [];
-    let duplicate = [...array];
-    for(let i = 0; i < duplicate.length; i++){
-        animationDetails.push([i, []]);
-        let max = duplicate[0];
-        for( let j = 0; j<duplicate.length - i - 1; j++){
-            if(duplicate[j]>duplicate[j+1]){
-                animationDetails[i][1].push(j);
-                let temp = duplicate[j+1];
-                duplicate[j+1] = duplicate[j];
-                duplicate[j] = temp;
-            }
+    let animations = [];
+    for(let i = 0; i < array.length; i++){
+      let max = array[0];
+      let loc = 0;
+      let tempStore = [];
+      for(let j = 0; j < array.length - i; j++){
+        if(array[j] >= max){
+          max = array[j];
+          loc = j;
+          tempStore.push(loc);
         }
+      }
+      let temp = array[array.length-i-1];
+      array[array.length-i-1] = max;
+      array[loc] = temp;
+      // tempStore.push(array.length-i-1);
+      animations.push(tempStore);
     }
-    return { sorted : duplicate, animation : animationDetails};
+    let result = {animations : animations, sortedArray : array};
+    return result;
 }
 
 export const insertionSort = array => {
+    let animations = [];
     for(let i = 1; i < array.length; i++){
         let j = i - 1;
         let temp = array[i];
@@ -84,24 +90,32 @@ export const insertionSort = array => {
             array[j] = temp;
             j--;
         }
+        animations.push([i, j+1]);
     }
-    return array;
+    let result = {animations : animations, sortedArray : array};
+    return result;
 }
 export const selectionSort = array => {
+    let animations = [];
     for(let i = 0 ; i < array.length; i++){
         let max = array[i];
         let k = i;
+        let tempStore = [];
+        tempStore.push(i);
         for(let j = i + 1 ; j < array.length ; j++){
             if(array[j] > max){
                 max = array[j];
                 k = j;
+                tempStore.push(k);
             }
         }
+        animations.push(tempStore);
         let temp = array[i];
         array[i] = array[k];
         array[k] = temp;
     }
-    return array;
+    const result = {sortedArray : array, animations : animations};
+    return result;
 }
 export const quickSort = array => {
     class template {

@@ -26,6 +26,7 @@ export default class Header extends React.Component{
                         <div className="list">
                             <div className="controlOptions">
                                 <div className="controlOption" onClick={this.props.reset}>Create new Array</div>
+                                <div className="controlOption" onClick={this.props.restore}>Restore</div>
                                 <div><input type="range" min="25" max="200" step="25" value={this.state.slider} onChange={this.handleChange} /></div>
                                 {/* <div className="controlOption">0.25x</div>
                                 <div className="controlOption">0.5x</div>
