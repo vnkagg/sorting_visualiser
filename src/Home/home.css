@@ -32,12 +32,39 @@
     width : 1200px;
     margin: auto;
     box-shadow: 0px 0px 10px 0px #282c34;
+    transition : all 1s ease;
   } 
-  .displayArr{
-    height: 500px;
+  .legend{
+    transition : all 1s ease;
+  }
+  .keys{
     width: 1200px;
     margin: auto;
-    box-shadow: 0px 0px 10px 0px #282c34;
+    display: flex;
+    justify-content: space-evenly;
+    transition: all 0.5s ease;
+    transition : all 1s ease;
+  }
+  .key{
+    width: fit-content;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .colorBox{
+    margin: 1%;
+    width: auto;
+    height: auto;
+    box-shadow: 0px 0px 4px 0px #f2cbcb84;
+  }
+  .text{
+    margin: 3%;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    font-size :medium;
+    font-weight: 600;
+    /* font-family :'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; */
   }
  .array-bar{
     width: 18px;
