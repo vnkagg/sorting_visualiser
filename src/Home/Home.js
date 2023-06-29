@@ -10,11 +10,12 @@ export default class Home extends React.Component{
             time : 0,
             speed : 100,
             sort : "",
+            pause : false,
             array : [],
             running : false,
             arrayBackup : [],
-            bubble : {
-                immediateMax : -1,
+            selection : {
+                lastMax : -1,
                 currentPointer : -1,
                 smallestIndexStored : 32
             },
@@ -34,18 +35,25 @@ export default class Home extends React.Component{
                 comparitorElement : -1,
                 comparitorDestination : -1
             },
-            selection : {
-                nextMax : -1,
-                destination : -1,
-                starting : -1,
-                current : -1
+            bubble : {
+                current : -1,
+                settleStarts : 32
             }
         };
     }
-    // isPause(){
-    //     const pause = !this.state.pause;
-    //     this.setState({pause : pause});
-    // }
+    setPause = async() => {
+
+        await this.setState(prev => {
+            return {
+                ...prev,
+                pause : !prev.pause}
+        });
+        console.log("pause state set setState");
+        while(this.state.pause){
+            console.log("pause added");
+            await this.sleep(1000);
+        }
+    }
     setSpeed = (value) => {
         this.setState(prev => {
             return {
@@ -88,7 +96,6 @@ export default class Home extends React.Component{
         const animations = sortingAlgorithms.mergeSort([...this.state.array]);
         let array = [...this.state.array];
         let speed = this.state.speed;
-        console.log("speed from the mergeSort", speed);
         await this.merge_sort(array, 0, array.length-1, animations, speed);
         this.setState(prev => {
             return {
@@ -101,7 +108,6 @@ export default class Home extends React.Component{
     show_div = async(animations) => {
         let speed = this.state.speed;
         let division = animations.divisions.shift();
-        console.log("divisions : ", division);
         await this.setState(prev => 
             {return {
                 ...prev, 
@@ -109,13 +115,15 @@ export default class Home extends React.Component{
                     ...prev.merge, 
                     division : division
                 }
-            }}, 
-            () => {console.log("state divisions status : ", this.state.merge.division);}
+            }}
         );
         await this.setState(prev => {return {...prev, time : prev.time+speed*5}});
         await this.sleep(speed*5);
     }
     merge_sort = async(array, l, r, animations) => {
+        while(this.state.pause){
+            await this.sleep(1000);
+        }
         if (l>=r) { return; }
         const mid = Math.floor((l+r)/2);
 
@@ -154,14 +162,14 @@ export default class Home extends React.Component{
             j++;
         }
         await this.setState(prev => {return {...prev, array : array}});
-        console.log("array state : ", this.state.array);
         // await this.setState(prev => {return {time : prev.time+this.state.speed}});
         await this.sleep(this.state.speed*10);
         return;
         // setTimeout(() => {
         // }, this.state.time);
     }
-    bubbleSort = async() => {
+
+    selectionSort = async() => {
         if(this.state.running){
             return;
         }
@@ -169,72 +177,66 @@ export default class Home extends React.Component{
             return {
                 ...prev,
                 running : true,
-                sort : "bubble"}
+                sort : "selection"}
         });
-        const result = sortingAlgorithms.bubbleSort([...this.state.array]);
+        const result = sortingAlgorithms.selectionSort([...this.state.array]);
         let animations = result.animations;
         const l = animations.length;
+        console.log("THE SORTED ARRAY", result.sortedArray);
 
         for(let i = 0; i < l; i++){
+            while(this.state.pause){
+                await this.sleep(1000);
+            }
             let currentData = animations.shift();
-            let j = 0;
             let array = [...this.state.array];
             let maxValue = array[currentData[currentData.length - 1]];
-            while(currentData.length){
-                let immediateMax = currentData.shift();
+            let last = currentData[currentData.length-1];
+            for(let j = 0; j < l - i; j++){
+                while(this.state.pause){
+                    await this.sleep(1000);
+                }
                 await this.setState(prev => {
                     return {
                         ...prev,
-                        bubble : {
-                            ...prev.bubble,
-                            immediateMax : immediateMax
+                        selection : {
+                            ...prev.selection,
+                            currentPointer : j
                         }
                     }
                 });
-                await this.sleep(this.state.speed);
-                while(j < immediateMax){
-                    let x = j;
+                if(j === currentData[0]){
+                    await this.sleep(this.state.speed*9);
+                    let x = currentData.shift();
                     await this.setState(prev => {
                         return {
                             ...prev,
-                            bubble : {
-                                ...prev.bubble,
-                                currentPointer : x
+                            selection : {
+                                ...prev.selection,
+                                lastMax : x,
+                                currentPointer : -1
                             }
                         }
-                    });
-                    await this.sleep(this.state.speed);
-                    j++;
+                    }); 
+                    await this.sleep(this.state.speed*6);
+                } else {
+                    await this.sleep(this.state.speed*4);
                 }
             }
-            while(j < l - i){
-                let x = j;
-                await this.setState(prev => {
-                    return {
-                        ...prev,
-                        bubble : {
-                            ...prev.bubble,
-                            currentPointer : x
-                        }
-                    }
-                });
-                await this.sleep(this.state.speed);
-                j++;
-            }
-            let temp = array[j];
-            array[j] = maxValue;
-            array[j-1] = temp;
+            let temp = array[l - i -1];
+            array[l - i -1] = maxValue;
+            array[last] = temp;
             await this.setState(prev => {
                 return {
                     ...prev,
                     array : array,
-                    bubble : {
-                        ...prev.bubble,
+                    selection : {
+                        ...prev.selection,
                         smallestIndexSorted : l - i - 1
                     }
                 }
             });
-            await this.sleep(this.state.speed);
+            await this.sleep(this.state.speed*5);
         }
         this.setState(prev => {
             return {
@@ -253,6 +255,9 @@ export default class Home extends React.Component{
         // this.setState({array : result.sortedArray});
         const animations = result.animations;
         for(let i = 0; i < animations.length; i++){
+            while(this.state.pause){
+                await this.sleep(1000);
+            }
             await this.setState(prev => {
                 return {
                     ...prev,
@@ -266,6 +271,9 @@ export default class Home extends React.Component{
             let array = this.state.array;
             let comparitor = array[animations[i][0]];
             for(let j = animations[i][0] - 1; j >= animations[i][1]; j--){
+                while(this.state.pause){
+                    await this.sleep(1000);
+                }
                 array[j+1] = array[j];
                 array[j] = comparitor;
                 if(j === animations[i][1]){
@@ -302,49 +310,48 @@ export default class Home extends React.Component{
             }
         })
     }
-    selectionSort = async() => {
+    bubbleSort = async() => {
         if(this.state.running){
             return;
         }
-        this.setState(prev => {return {...prev, running : true, sort : "selection"}});
-        const result = sortingAlgorithms.selectionSort([...this.state.array]);
-        let animations = result.animations;
-        let length = animations.length;
-        for(let i = 0; i < length; i++){
-            let current = animations.shift();
-            let destination = current[current.length - 1];
-            let starting = current.shift();
-            this.setState(prev => {
+        this.setState(prev => {return {...prev, running : true, sort : "bubble"}});
+        let l = [...this.state.array].length;
+        for(let i = 0; i < l; i++){
+            while(this.state.pause){
+                await this.sleep(1000);
+            }
+            let array = [...this.state.array];
+            for(let j = 0; j < l - i - 1; j++){
+                while(this.state.pause){
+                    await this.sleep(1000);
+                }
+                await this.setState(prev => {
+                    return {
+                        ...prev,
+                        array : array,
+                        bubble : {
+                            ...prev.bubble,
+                            current : j+1
+                        },
+                    }
+                });
+                if(array[j] >= array[j+1]){
+                    let x = array[j+1];
+                    array[j+1] = array[j];
+                    array[j] = x;  
+                }
+                await this.sleep(this.state.speed*2);
+            }
+            await this.setState(prev => {
                 return {
                     ...prev,
-                    selection : {
-                        ...prev.selection, 
-                        destination : destination,
-                        starting : starting
+                    bubble : {
+                        ...prev.bubble,
+                        settleStarts : array.length-i-1
                     }
                 }
             });
-            for(let i = starting; i < destination; i++){
-                if(i === current[0]){
-                    let x = current.shift();
-                    await this.setState(prev => {
-                        return {...prev, 
-                        selection : {
-                            ...prev.selection,
-                            nextMax : x,
-                            current : i
-                        }}
-                    });
-                    continue;
-                }
-                await this.setState(prev => {
-                    return {...prev, 
-                    selection : {
-                        ...prev.selection,
-                        current : i
-                    }}
-                });
-            }
+            await this.sleep(this.state.speed*2);
         }
         this.setState(prev => {
             return {
@@ -387,6 +394,9 @@ export default class Home extends React.Component{
         })
     }
     quick_sort = async(l, r, animations) => {
+        while(this.state.pause){
+            await this.sleep(1000);
+        }
         if(l >= r){
             return;
         }
@@ -415,16 +425,13 @@ export default class Home extends React.Component{
         for(let i = 0; i < activeArray.length; i++){
             if(smaller[0] === i){
                 let x = l + smaller.shift();
-                console.log("x : ", x);
                 await this.setState(prev => {
                     return {
                         ...prev, 
                         quick : {
                             ...prev.quick, 
-                            smaller : [...prev.quick.smaller, x]}}},
-                            () => {
-                                console.log("smaller spotted : ", this.state.quick.smaller);
-                            });
+                            smaller : [...prev.quick.smaller, x]}}}
+                            );
                 
             } else if (equals[0] === i){
                 let x = l + equals.shift();
@@ -433,10 +440,8 @@ export default class Home extends React.Component{
                         ...prev, 
                         quick : {
                             ...prev.quick, 
-                            equals : [...prev.quick.equals, x]}}}, 
-                            () => {
-                                console.log("equal spotted : ", this.state.quick.equals);
-                            });
+                            equals : [...prev.quick.equals, x]}}
+                        });
             } else if (larger[0] === i) {
                 let x = l + larger.shift();
                 await this.setState(prev => {
@@ -444,14 +449,11 @@ export default class Home extends React.Component{
                         ...prev, 
                         quick : {
                             ...prev.quick, 
-                            larger : [...prev.quick.larger, x]}}},
-                            () => {
-                                console.log("larger spotted : ", this.state.quick.larger);
-                            });
+                            larger : [...prev.quick.larger, x]}}
+                        });
             }
             await this.sleep(this.state.speed);
         }
-        await console.log("END OF ITERATION");
         // console.log("smaller : ", smaller);
         // console.log("equals : ", equals);
         // console.log("larger : ", larger);
@@ -499,20 +501,22 @@ export default class Home extends React.Component{
         return Math.floor(min + Math.random() * (max - min + 1)); 
     }
     render() {
-        const { array, sort, bubble, merge, quick, insertion } = this.state;
+        const { array, sort, selection, merge, quick, insertion , bubble} = this.state;
         
         return (
           <>
             <Header
               reset={this.resetArray}
               speed={this.setSpeed}
+              statePause={this.state.pause}
               restore={this.restore}
+              pause={this.setPause}
               Sort={{
                 mergeSort: this.mergeSort,
                 quickSort: this.quickSort,
-                bubbleSort: this.bubbleSort,
+                selectionSort: this.selectionSort,
                 insertionSort: this.insertionSort,
-                selectionSort: this.selectionSort
+                bubbleSort: this.bubbleSort
               }}
             />
             <div className="container">
@@ -521,13 +525,13 @@ export default class Home extends React.Component{
                     array.map((value, index) => {
                         let backgroundColor = "";
                         
-                        if (sort === 'bubble') {
+                        if (sort === 'selection') {
                             backgroundColor = 
-                            index >= bubble.smallestIndexStored
+                            index >= selection.smallestIndexStored
                                 ? "#f2cbcb84" 
-                                : index === bubble.immediateMax
-                                ? "#9d9db7"
-                                : index === bubble.currentPointer 
+                                : index === selection.lastMax
+                                ? "#b7b7b7"
+                                : index === selection.currentPointer 
                                 ? "#f2cbcb84"
                                 : "#282c34";
                         } else if (sort === 'merge') {
@@ -548,7 +552,7 @@ export default class Home extends React.Component{
                                 : quick.smaller.includes(index)
                                 ? "#9bb5a1"
                                 : index < quick.activeArray[0] || index > quick.activeArray[1]
-                                ? "#000000"
+                                ? "#505050"
                                 : "#282c34";
                         } else if (sort === 'insertion') {
                             backgroundColor = 
@@ -557,13 +561,20 @@ export default class Home extends React.Component{
                                     :  index === insertion.comparitorDestination
                                     ? "#9bb5a1"
                                     : "#282c34";
+                        } else if (sort === 'bubble') {
+                            backgroundColor = 
+                                index === bubble.current
+                                    ? "#f2cbcb84"
+                                    :  index >= bubble.settleStarts
+                                    ? "#f2cbcb84"
+                                    : "#282c34";
                         } else {
                             backgroundColor = "#282c34";
                         }
             
                         return (
                             <div
-                            className={`array-bar ${index !== bubble.max ? "normal-bar" : ""}`}
+                            className={`array-bar ${index !== bubble.current || index !== selection.currentPointer ? "" : "static"}`}
                             key={index}
                             style={{ height: `${value / 2}px`, backgroundColor}}
                             />
@@ -572,32 +583,60 @@ export default class Home extends React.Component{
                 }
               </div>
             </div>
-            <div className="legend" style={{transform : `${sort === 'quick' ? "translateY(0)" : 0}`}}>
+            <div className="legend" style={{transform : `${sort !== '' ? "translateY(0)" : 0}`}}>
                 {sort === 'quick' &&
                     <div className="keys">
                         <div className="key">
                             <div className="colorBox" style={{backgroundColor : "#ffffff"}}>
-                                <div className="text" style={{color : "#282c34"}}>The Pivot element</div>
+                                <div className="text">PIVOT ELEMENT</div>
                             </div>
                         </div>
                         <div className="key">
                             <div className="colorBox" style={{backgroundColor : "#9d9db7"}}>
-                                <div className="text" style={{color : "#282c34"}}>Elements larger than the Pivot element</div>
+                                <div className="text">ELEMENTS LARGER THAN THE PIVOT</div>
                             </div>
                         </div>
                         <div className="key">
                             <div className="colorBox" style={{backgroundColor : "#9bb5a1"}}>
-                                <div className="text" style={{color : "#282c34"}}>Elements smaller than the Pivot element</div>
+                                <div className="text">ELEMENTS SMALLER THAN THE PIVOT</div>
                             </div>
                         </div>
                         <div className="key">
                             <div className="colorBox" style={{backgroundColor : "#B99FA1"}}>
-                                <div className="text" style={{color : "#282c34"}}>Elements equal to the Pivot element</div>
+                                <div className="text">ELEMENTS FOUND TO BE EQUAL TO THE PIVOT</div>
                             </div>
                         </div>
                         <div className="key">
                             <div className="colorBox" style={{backgroundColor : "#505050"}}>
-                                <div className="text" style={{color : "#f2cbcb84"}}>The Elements not in current recursion</div>
+                                <div className="text" style={{color : "#f2cbcb84"}}>ELEMENTS NOT IN THE CURRENT RECURSION</div>
+                            </div>
+                        </div>
+                    </div>
+                }    
+                {sort==='insertion' && 
+                    <div className="keys">
+                        <div className="key">
+                            <div className="colorBox" style={{backgroundColor : "#f2cbcb84"}}>
+                                <div className="text">THE CURRENTLY ITERATED ELEMENT</div>
+                            </div>
+                        </div>
+                        <div className="key">
+                            <div className="colorBox" style={{backgroundColor : "#9bb5a1"}}>
+                                <div className="text">CORRECT POSITION OF THE CURRENTLY ITERATED ELEMENT IN THE SORTED ARRAY ON THE LEFT</div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                {sort==='selection' && 
+                    <div className="keys">
+                        <div className="key">
+                            <div className="colorBox" style={{backgroundColor : "#f2cbcb84"}}>
+                                <div className="text">THE CURRENTLY ITERATED ELEMENT</div>
+                            </div>
+                        </div>
+                        <div className="key">
+                            <div className="colorBox" style={{backgroundColor : "#b7b7b7"}}>
+                                <div className="text">THE MAXIMUM ELEMENT FOUND IN THE ITERATION SO FAR</div>
                             </div>
                         </div>
                     </div>

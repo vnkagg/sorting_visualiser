@@ -57,7 +57,7 @@ export const mergeSort = (array) => {
     return animations;
   };
   
-export const bubbleSort = array => {
+export const selectionSort = array => {
     let animations = [];
     for(let i = 0; i < array.length; i++){
       let max = array[0];
@@ -95,7 +95,7 @@ export const insertionSort = array => {
     let result = {animations : animations, sortedArray : array};
     return result;
 }
-export const selectionSort = array => {
+export const bubbleSort = array => {
     let animations = [];
     for(let i = 0 ; i < array.length; i++){
         let max = array[i];

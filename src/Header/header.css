@@ -1,3 +1,5 @@
+@import '~@fortawesome/fontawesome-free/css/all.css';
+
 .Header{
     width: 100%;
     color: #f2cbcb84;
@@ -29,9 +31,10 @@
     cursor: pointer;
     font-size: 25px;
     font-weight: 600;
+    min-width: 10px;
     color: #f2cbcb84;
-    margin-left: 1rem;
-    margin-right : 3rem;
+    padding-left: 1rem;
+    padding-right : 1rem;
     transition: all 0.1s ease;
 }
 .controlOption:hover{
