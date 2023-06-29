@@ -11,6 +11,7 @@ export default class Home extends React.Component{
             speed : 100,
             sort : "",
             array : [],
+            arrayBackup : [],
             bubble : {
                 max : -1,
                 settle : -1,
@@ -26,6 +27,10 @@ export default class Home extends React.Component{
                 activeArray : [],
                 static : false,
                 partition : 0
+            },
+            insertion : {
+                comparitorElement : -1,
+                comparitorDestination : -1
             }
         };
     }
@@ -52,8 +57,11 @@ export default class Home extends React.Component{
         for(let i = 0; i < 32; i++){
             array.push(this.randIntFromRange(50,1000));
         }
-        this.setState(prev => {return {...prev, sort : "", array : array, time : 0}});
+        this.setState(prev => {return {...prev, sort : "", array : array, arrayBackup : array, time : 0}});
         console.log("THE UNSORTED ARRAY", array);
+    }
+    restore = () => {
+        this.setState(prev => {return {...prev, sort : "", array : prev.arrayBackup, time : 0}});
     }
     sleep = (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -173,10 +181,45 @@ export default class Home extends React.Component{
         }
           
     }
-    insertionSort = () => {
-        const arr = sortingAlgorithms.insertionSort(this.state.array);
+    insertionSort = async() => {
+        const result = sortingAlgorithms.insertionSort([...this.state.array]);
         this.setState({sort : "insertion"});
-        this.setState({array : arr});
+        // this.setState({array : result.sortedArray});
+        const animations = result.animations;
+        for(let i = 0; i < animations.length; i++){
+            await this.setState(prev => {
+                return {
+                    ...prev,
+                    insertion : {
+                        comparitorElement : animations[i][0],
+                        comparitorDestination : animations[i][1]
+                    }
+                }
+            });
+            await this.sleep(this.state.speed);
+            let array = this.state.array;
+            let comparitor = array[animations[i][0]];
+            // array[animations[i][0]] = 0;
+            // this.setState(prev => {
+            //     return {
+            //         ...prev,
+            //         array : array
+            //     }
+            // })
+            for(let j = animations[i][0] - 1; j >= animations[i][1]; j--){
+                array[j+1] = array[j];
+                await this.setState(prev => {
+                    return {
+                        ...prev, 
+                        array : array
+                    }
+                });
+                this.sleep(this.state.speed);
+            }
+            array[animations[i][1]] = comparitor;
+            await this.sleep(this.state.speed);
+            
+        }
     }
     selectionSort = () => {
         const arr = sortingAlgorithms.selectionSort(this.state.array);
@@ -331,6 +374,7 @@ export default class Home extends React.Component{
             <Header
               reset={this.resetArray}
               speed={this.setSpeed}
+              restore={this.restore}
               Sort={{
                 mergeSort: this.mergeSort,
                 quickSort: this.quickSort,
@@ -341,77 +385,88 @@ export default class Home extends React.Component{
             />
             <div className="container">
               <div className="array">
-                {array.map((value, index) => {
-                  let backgroundColor = "";
-                  
-                  if (sort === 'bubble') {
-                    backgroundColor = index !== bubble.max ? "#282c34" : "#f2cbcb84";
-                  } else if (sort === 'merge') {
-                    backgroundColor =
-                      index >= merge.division[0] && index <= merge.division[1]
-                        ? "#9bb5a1"
-                        : index <= merge.division[2] && index > merge.division[1]
-                        ? "#9d9db7"
-                        : "#282c34";
-                  } else if (sort === 'quick') {
-                    backgroundColor =
-                      index === quick.partition
-                        ? "#ffffff"
-                        : quick.larger.includes(index)
-                        ? "#9d9db7"
-                        : quick.equals.includes(index)
-                        ? "#B99FA1"
-                        : quick.smaller.includes(index)
-                        ? "#9bb5a1"
-                        : index < quick.activeArray[0] || index > quick.activeArray[1]
-                        ? "#000000"
-                        : "#282c34";
-                  } else {
-                    backgroundColor = "#282c34";
-                  }
-      
-                  return (
-                    <div
-                      className={`array-bar ${index !== bubble.max ? "normal-bar" : ""}`}
-                      key={index}
-                      style={{ height: `${value / 2}px`, backgroundColor }}
-                    />
-                  );
-                })}
+                {
+                    array.map((value, index) => {
+                        let backgroundColor = "";
+                        
+                        if (sort === 'bubble') {
+                            backgroundColor = index !== bubble.max ? "#282c34" : "#f2cbcb84";
+                        } else if (sort === 'merge') {
+                            backgroundColor =
+                            index >= merge.division[0] && index <= merge.division[1]
+                                ? "#9bb5a1"
+                                : index <= merge.division[2] && index > merge.division[1]
+                                ? "#9d9db7"
+                                : "#282c34";
+                        } else if (sort === 'quick') {
+                            backgroundColor =
+                            index === quick.partition
+                                ? "#ffffff"
+                                : quick.larger.includes(index)
+                                ? "#9d9db7"
+                                : quick.equals.includes(index)
+                                ? "#B99FA1"
+                                : quick.smaller.includes(index)
+                                ? "#9bb5a1"
+                                : index < quick.activeArray[0] || index > quick.activeArray[1]
+                                ? "#000000"
+                                : "#282c34";
+                        } else {
+                            backgroundColor = "#282c34";
+                        }
+            
+                        return (
+                            <div
+                            className={`array-bar ${index !== bubble.max ? "normal-bar" : ""}`}
+                            key={index}
+                            style={{ height: `${value / 2}px`, backgroundColor}}
+                            />
+                        );
+                    })
+                }
+              </div>
+              <div>
+                {
+                    sort === 'insertion' &&
+                    <>
+                    </>
+                }  
               </div>
             </div>
-              <div className="legend">
+            <div className="legend" style={{transform : `${sort === 'quick' ? "translateY(0)" : 0}`}}>
                 {sort === 'quick' &&
-                <div className="keys">
-                    <div className="key">
-                        <div className="colorBox" style={{backgroundColor : "#ffffff"}}>
-                            <div className="text" style={{color : "#282c34"}}>The Pivot element</div>
+                    <div className="keys">
+                        <div className="key">
+                            <div className="colorBox" style={{backgroundColor : "#ffffff"}}>
+                                <div className="text" style={{color : "#282c34"}}>The Pivot element</div>
+                            </div>
+                        </div>
+                        <div className="key">
+                            <div className="colorBox" style={{backgroundColor : "#9d9db7"}}>
+                                <div className="text" style={{color : "#282c34"}}>Elements larger than the Pivot element</div>
+                            </div>
+                        </div>
+                        <div className="key">
+                            <div className="colorBox" style={{backgroundColor : "#9bb5a1"}}>
+                                <div className="text" style={{color : "#282c34"}}>Elements smaller than the Pivot element</div>
+                            </div>
+                        </div>
+                        <div className="key">
+                            <div className="colorBox" style={{backgroundColor : "#B99FA1"}}>
+                                <div className="text" style={{color : "#282c34"}}>Elements equal to the Pivot element</div>
+                            </div>
+                        </div>
+                        <div className="key">
+                            <div className="colorBox" style={{backgroundColor : "#505050"}}>
+                                <div className="text" style={{color : "#f2cbcb84"}}>The Elements not in current recursion</div>
+                            </div>
                         </div>
                     </div>
-                    <div className="key">
-                        <div className="colorBox" style={{backgroundColor : "#9d9db7"}}>
-                            <div className="text" style={{color : "#282c34"}}>Elements larger than the Pivot element</div>
-                        </div>
-                    </div>
-                    <div className="key">
-                        <div className="colorBox" style={{backgroundColor : "#9bb5a1"}}>
-                            <div className="text" style={{color : "#282c34"}}>Elements smaller than the Pivot element</div>
-                        </div>
-                    </div>
-                    <div className="key">
-                        <div className="colorBox" style={{backgroundColor : "#B99FA1"}}>
-                            <div className="text" style={{color : "#282c34"}}>Elements equal to the Pivot element</div>
-                        </div>
-                    </div>
-                    <div className="key">
-                        <div className="colorBox" style={{backgroundColor : "#505050"}}>
-                            <div className="text" style={{color : "#f2cbcb84"}}>The Elements not in current recursion</div>
-                        </div>
-                    </div>
-                </div>}
-                </div>
+                }
+            </div>
           </>
         );
       }
       
 };
+
