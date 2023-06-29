@@ -93,6 +93,7 @@ export default class Home extends React.Component{
         this.setState(prev => {
             return {
                 ...prev,
+                running : false,
                 sort : ""
             }
         })
@@ -235,6 +236,13 @@ export default class Home extends React.Component{
             });
             await this.sleep(this.state.speed);
         }
+        this.setState(prev => {
+            return {
+                ...prev, 
+                running : false,
+                sort : ""
+            }
+        })
     }
     insertionSort = async() => {
         if(this.state.running){
@@ -285,6 +293,7 @@ export default class Home extends React.Component{
         this.setState(prev => {
             return {
                 ...prev,
+                running : false,
                 sort : "",
                 insertion : {
                     comparitorElement : -1,
@@ -337,6 +346,13 @@ export default class Home extends React.Component{
                 });
             }
         }
+        this.setState(prev => {
+            return {
+                ...prev, 
+                running : false,
+                sort : ""
+            }
+        })
     }
     quickSort = async() => {
         if(this.state.running){
@@ -365,6 +381,7 @@ export default class Home extends React.Component{
         this.setState(prev => {
             return {
                 ...prev, 
+                running : false,
                 sort : ""
             }
         })
