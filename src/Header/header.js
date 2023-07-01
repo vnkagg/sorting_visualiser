@@ -80,27 +80,28 @@ export default class Header extends React.Component{
 
 function InputArrayComponent({arrayHandling}){
     const [isValid, setisValid] = useState(false);
-    const [inputArray, setinputArray] = useState('');
+    const [inputArray, setinputArray] = useState([]);
 
     const handleChange = (event) => {
         let array = event.target.value;
-        setinputArray(array);
+        // setinputArray(array);
         array = array.trim().split(' ');
+        let temp = inputArray;
         setisValid(true);
         for(let i = 0; i < array.length; i++){
-            if(!Number.isInteger(parseInt(array[i]))){
+            if(array[i].match(/\D+/) !== null){
                 setisValid(false);
                 break;
             } else {
                 array[i] = parseInt(array[i]);
+                temp = array.slice(0, i+1);
             }
         }
         console.log("array", array);
         if(isValid){
-            arrayHandling(array);
-        } else {
-            arrayHandling([]);
-        }
+            setinputArray(temp);
+        } 
+        arrayHandling(temp);
     }
     return (
         <>
