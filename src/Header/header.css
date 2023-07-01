@@ -57,7 +57,7 @@ h1{
     transform: scale(0);
     justify-content : center;
     align-items: flex-start;
-    transition: all 0.2s ease-in-out;
+    transition: all 3s ease-in-out;
 }
 .icon{
     color : '#f2cbcb84'; 
@@ -87,6 +87,7 @@ h1{
 .arrayInput{
     flex:1;
     justify-content: center;
+    transition: all 3s ease;
 }
 input[type='text'] {
     background-color: #282c34;

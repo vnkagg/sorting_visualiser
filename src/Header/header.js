@@ -12,11 +12,20 @@ export default class Header extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            slider : 100,
+            slider : `${!this.props.running ? 100 : 0 }`,
             pause : false,
             inputArray : []
         }
+        // this.props.running.addEventListener("slider", () => this.setState({slider : 100}));
     }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.running !== this.props.running && !this.props.running) {
+          this.setState({ slider: 100 });
+          this.props.speed(100);
+        }
+      }
+
     handleChange = (event) => {
         this.setState({slider : event.target.value});
         this.props.speed(parseInt(event.target.value));
@@ -25,6 +34,13 @@ export default class Header extends React.Component{
         this.setState({inputArray : array});
         this.props.arrayEntered(this.state.inputArray);
     }
+    // callMergeSort = () => {
+
+    // }
+    // callQuickSort = () => {
+
+    // }
+
     render() {
         return (
             <div>
@@ -41,7 +57,7 @@ export default class Header extends React.Component{
                             <div className="controlOption" onClick={this.props.restore}>Initial Array</div>
                         </div>
 
-                        {this.props.running && <div className="time" style ={{transform : `${this.props.running ? 'scale(1)' : "scale(0)"}`}}>
+                        {this.props.running && <div className="time" style ={{transform : `${this.props.running ? 'scale(100%)' : "scale(0)"}`}}>
                             <div className = "icon" onClick={this.props.pause}>
                                 {this.props.statePause 
                                 ? (<FontAwesomeIcon icon={faPlay} style={{  color : '#f2cbcb84', 
@@ -59,7 +75,7 @@ export default class Header extends React.Component{
                             </div>
                         </div>}
                         {!this.props.running && 
-                        <div className="arrayInput">
+                        <div className="arrayInput" style={{transform : `${!this.props.running ? 'scale(100%)' : 'scale(0)'}`}}>
                             <InputArrayComponent arrayHandling={this.handleInputArray}/>
                         </div>}
 
