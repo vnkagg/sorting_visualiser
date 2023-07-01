@@ -107,7 +107,7 @@ function InputArrayComponent({arrayHandling}){
         <>
             <input 
                 type='text' 
-                placeholder="Input Custom Array (space separated)" 
+                placeholder="Input Custom Array" 
                 onChange={handleChange}
                 style={{border: `${!isValid && inputArray !== ''? '2px solid #ff9494' : ''}`, placeholder : `${!isValid ? 'Please Enter Valid Integers (,/ )' : ''}` }}
             />

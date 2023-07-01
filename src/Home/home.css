@@ -33,6 +33,7 @@
   margin: 0.1%;
   height: auto;
   border-radius: 100px;
+  border : 1px solid #000000;
 }
 .container{
   min-height: 500px;
@@ -59,14 +60,14 @@
     margin: 0 0.5vw;
     background-color: #282c34;
     border: 0px solid #f2cbcb84;
-    transition: height 0.2s ease;
+    /* transition: height 0.2s ease; */
   }
   .array-bar .static{
     transition: none;
   }
-.normal-bar{
+  .normal-bar{
     transition: height 0.2s ease;
-}
+  }
   .legend{
     transition : all 1s ease-in;
     transform: translateY(100%);

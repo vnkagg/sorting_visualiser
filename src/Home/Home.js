@@ -82,7 +82,7 @@ export default class Home extends React.Component{
             array.push(this.randIntFromRange(10, 100));
         }
         let max = Math.max(...array);
-        this.setState(prev => {return {...prev, sort : "", array : array, arrayBackup : array, maxArray : max, time : 0}});
+        this.setState(prev => {return {...prev, sort : "", array : array, speed : 100, arrayBackup : array, maxArray : max, time : 0}});
         console.log("THE UNSORTED ARRAY", array);
     }
 
@@ -91,13 +91,13 @@ export default class Home extends React.Component{
             return false;
         }
         let max = Math.max(...array);
-        this.setState({array : array, arrayBackup : array, maxArray : max});
+        this.setState({array : array, arrayBackup : array, speed : 100, maxArray : max});
     }
     restore = () => {
         if(this.state.running){
             return;
         }
-        this.setState(prev => {return {...prev, sort : "", array : prev.arrayBackup, time : 0}});
+        this.setState(prev => {return {...prev, sort : "", array : prev.arrayBackup,speed : 100, time : 0}});
     }
     sleep = (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -591,7 +591,7 @@ export default class Home extends React.Component{
             
                         return (
                             <div
-                            className={`array-bar ${index !== bubble.current || index !== selection.currentPointer ? "" : "static"}`}
+                            className={`array-bar ${index === bubble.current || index === selection.currentPointer ? "" : "normal-bar"}`}
                             key={index}
                             style={{ height: `${value / this.state.maxArray * 100}%`, backgroundColor}}
                             />
@@ -601,8 +601,56 @@ export default class Home extends React.Component{
               </div>
               <div className="numbers">
                 {array.map((value, index) => {
+                        let backgroundColor = "";
+                        
+                        if (sort === 'selection') {
+                            backgroundColor = 
+                            index >= selection.smallestIndexStored
+                                ? "#f2cbcb84" 
+                                : index === selection.lastMax
+                                ? "#b7b7b7"
+                                : index === selection.currentPointer 
+                                ? "#f2cbcb84"
+                                : "#282c34";
+                        } else if (sort === 'merge') {
+                            backgroundColor =
+                            index >= merge.division[0] && index <= merge.division[1]
+                                ? "#9bb5a1"
+                                : index <= merge.division[2] && index > merge.division[1]
+                                ? "#9d9db7"
+                                : "#282c34";
+                        } else if (sort === 'quick') {
+                            backgroundColor =
+                            index === quick.partition
+                                ? "#ffffff"
+                                : quick.larger.includes(index)
+                                ? "#9d9db7"
+                                : quick.equals.includes(index)
+                                ? "#B99FA1"
+                                : quick.smaller.includes(index)
+                                ? "#9bb5a1"
+                                : index < quick.activeArray[0] || index > quick.activeArray[1]
+                                ? "#505050"
+                                : "#282c34";
+                        } else if (sort === 'insertion') {
+                            backgroundColor = 
+                                index === insertion.comparitorElement
+                                    ? "#f2cbcb84"
+                                    :  index === insertion.comparitorDestination
+                                    ? "#9bb5a1"
+                                    : "#282c34";
+                        } else if (sort === 'bubble') {
+                            backgroundColor = 
+                                index === bubble.current
+                                    ? "#f2cbcb84"
+                                    :  index >= bubble.settleStarts
+                                    ? "#f2cbcb84"
+                                    : "#282c34";
+                        } else {
+                            backgroundColor = "#282c34";
+                        }
                         return(
-                            <div className="numberBubble">
+                            <div className="numberBubble" style={{backgroundColor}} key={index}>
                                 {value}
                             </div>
                         )
