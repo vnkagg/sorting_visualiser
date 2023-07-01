@@ -79,7 +79,7 @@ export default class Header extends React.Component{
 
 
 function InputArrayComponent({arrayHandling}){
-    const [isValid, setisValid] = useState(false);
+    const [isValid, setisValid] = useState(true);
     const [inputArray, setinputArray] = useState([]);
 
     const handleChange = (event) => {
