@@ -29,6 +29,7 @@ h1{
     flex-direction: row;
     justify-content: space-between;
     padding-bottom: 1rem;
+    align-items: center;
 }
 .controlOptions{
     flex-shrink : 1;
@@ -83,7 +84,31 @@ h1{
 .listItem:hover{
     color : #f2cbcb;
 }
-
+.arrayInput{
+    flex:1;
+    justify-content: center;
+}
+input[type='text'] {
+    background-color: #282c34;
+    min-width: 250px;
+    padding: 10px;
+    width: 100%;
+    margin: auto;
+    font-size: 1rem;
+    font-weight: 700;
+    border: none;
+    color : #f2cbcbb8;
+    border: 2px solid rgb(242,220,220, 0.58);
+    border-radius: 12px;
+    transition: all 0.1s ease;
+    text-align: center;
+}
+input[type='text']:focus{
+    outline: none;
+    border: none;
+    border: 2px solid #f2cbcbb8;
+    border-radius: 12px;
+}
 
 input[type="range"] {
     transform: rotate(180deg);

@@ -13,7 +13,9 @@ export default class Home extends React.Component{
             pause : false,
             array : [],
             running : false,
+            customArray : true,
             arrayBackup : [],
+            maxArray : -1,
             selection : {
                 lastMax : -1,
                 currentPointer : -1,
@@ -68,16 +70,28 @@ export default class Home extends React.Component{
     componentDidMount() {
         this.resetArray();
     }
+    randIntFromRange(min, max){
+        return Math.floor(min + Math.random() * (max - min)); 
+    }
     resetArray = () => {
         if(this.state.running){
             return;
         }
-        const array = [];
+        let array = [];
         for(let i = 0; i < 32; i++){
-            array.push(this.randIntFromRange(10,100));
+            array.push(this.randIntFromRange(10, 100));
         }
-        this.setState(prev => {return {...prev, sort : "", array : array, arrayBackup : array, time : 0}});
+        let max = Math.max(...array);
+        this.setState(prev => {return {...prev, sort : "", array : array, arrayBackup : array, maxArray : max, time : 0}});
         console.log("THE UNSORTED ARRAY", array);
+    }
+
+    handleInputArray = (array) => {
+        if(this.state.running){
+            return false;
+        }
+        let max = Math.max(...array);
+        this.setState({array : array, arrayBackup : array, maxArray : max});
     }
     restore = () => {
         if(this.state.running){
@@ -499,9 +513,7 @@ export default class Home extends React.Component{
         await this.quick_sort(r - j + 1, r, animations);
         return;
     }
-    randIntFromRange(min, max){
-        return Math.floor(min + Math.random() * (max - min + 1)); 
-    }
+
     render() {
         const { array, sort, selection, merge, quick, insertion , bubble} = this.state;
         
@@ -515,6 +527,7 @@ export default class Home extends React.Component{
               restore={this.restore}
               pause={this.setPause}
               sortMode={this.state.sort}
+              arrayEntered = {this.handleInputArray}
               Sort={{
                 mergeSort: this.mergeSort,
                 quickSort: this.quickSort,
@@ -580,11 +593,20 @@ export default class Home extends React.Component{
                             <div
                             className={`array-bar ${index !== bubble.current || index !== selection.currentPointer ? "" : "static"}`}
                             key={index}
-                            style={{ height: `${value}%`, backgroundColor}}
+                            style={{ height: `${value / this.state.maxArray * 100}%`, backgroundColor}}
                             />
                         );
                     })
                 }
+              </div>
+              <div className="numbers">
+                {array.map((value, index) => {
+                        return(
+                            <div className="numberBubble">
+                                {value}
+                            </div>
+                        )
+                    })}
               </div>
             </div>
             <div className="legend" style={{transform : `${sort !== '' ? "translateY(0)" : 0}`}}>
