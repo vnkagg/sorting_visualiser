@@ -74,7 +74,7 @@ export default class Home extends React.Component{
         }
         const array = [];
         for(let i = 0; i < 32; i++){
-            array.push(this.randIntFromRange(50,1000));
+            array.push(this.randIntFromRange(10,100));
         }
         this.setState(prev => {return {...prev, sort : "", array : array, arrayBackup : array, time : 0}});
         console.log("THE UNSORTED ARRAY", array);
@@ -298,7 +298,7 @@ export default class Home extends React.Component{
             }
             await this.sleep(this.state.speed*10);
         }
-        this.setState(prev => {
+        await this.setState(prev => {
             return {
                 ...prev,
                 running : false,
@@ -457,6 +457,7 @@ export default class Home extends React.Component{
         // console.log("smaller : ", smaller);
         // console.log("equals : ", equals);
         // console.log("larger : ", larger);
+
         let updateStateArray = [...arrayState.slice(0, l), ...current.arrayFinal, ...arrayState.slice(r+1)];
 
         let smaller_final = [];
@@ -479,6 +480,7 @@ export default class Home extends React.Component{
         // console.log("smaller_final", smaller_final);
         // console.log("equals_final", equals_final);
         // console.log("larger_final", larger_final);
+        await this.sleep(this.state.speed*10);
         await this.setState(prev => {
             return {
                 ...prev, 
@@ -509,8 +511,10 @@ export default class Home extends React.Component{
               reset={this.resetArray}
               speed={this.setSpeed}
               statePause={this.state.pause}
+              running = {this.state.running}
               restore={this.restore}
               pause={this.setPause}
+              sortMode={this.state.sort}
               Sort={{
                 mergeSort: this.mergeSort,
                 quickSort: this.quickSort,
@@ -576,7 +580,7 @@ export default class Home extends React.Component{
                             <div
                             className={`array-bar ${index !== bubble.current || index !== selection.currentPointer ? "" : "static"}`}
                             key={index}
-                            style={{ height: `${value / 2}px`, backgroundColor}}
+                            style={{ height: `${value}%`, backgroundColor}}
                             />
                         );
                     })
