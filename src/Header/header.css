@@ -9,6 +9,12 @@
     justify-content: space-evenly;
     height: fit-content;
     background-color: #282c34;
+    /* box-shadow: -3px -3px 10px rgba(255, 255, 255, 0.7), 3px 3px 10px rgba(0, 0, 0, 0.3); */
+
+    /* Add a border to complete the emboss effect */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 0 0 40px 40px;
+    
 }   
 .center{
     flex : 1;
