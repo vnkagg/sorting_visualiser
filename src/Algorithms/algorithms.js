@@ -21,14 +21,17 @@ export const mergeSort = (array) => {
       let j = 0;
       let k = start;
       let mergedArr = [];
+      // let index = animations.merges.length; 
       while (i < arrL.length && j < arrR.length) {
         if (arrL[i] < arrR[j]) {
           arr[k] = arrL[i];
           mergedArr.push(start + i);
+          animations.merges.push(start + i);
           i++;
         } else {
           arr[k] = arrR[j];
           mergedArr.push(mid+1 + j);
+          animations.merges.push(mid+1 + j);
           j++;
         }
         k++;
@@ -36,19 +39,21 @@ export const mergeSort = (array) => {
       while (i < arrL.length) {
         arr[k] = arrL[i];
         mergedArr.push(start + i);
+        animations.merges.push(start + i);
         i++;
         k++;
       }
       while (j < arrR.length) {
         arr[k] = arrR[j];
         mergedArr.push(mid+1 + j);
+        animations.merges.push(mid+1 + j);
         j++;
         k++;
       }
       animations.mergedArrays.push(mergedArr);
     }
   
-    let animations = { divisions: [], mergedArrays : [] };
+    let animations = { divisions: [], mergedArrays : [], merges : [] };
     merge_sort(array, 0, array.length - 1, animations);
     let last = [0, (array.length/2) -1, array.length-1]
     animations.divisions.push(last);

@@ -2,10 +2,11 @@ import React from "react";
 import Header from "../Header/header";
 import * as sortingAlgorithms from '../Algorithms/algorithms';
 import './home.css';
+import * as Scroll from 'react-scroll';
 
 export default class Home extends React.Component{
     constructor(props){
-        super(props);   
+        super(props);
         this.state = {
             time : 0,
             speed : 100,
@@ -23,7 +24,9 @@ export default class Home extends React.Component{
             },
             merge : {
                 division : [-1, -1, -1],
-                displayArr : []
+                displayArr : [],
+                merges : [],
+                dummyArray : []
             },
             quick : {
                 smaller : [],
@@ -85,7 +88,10 @@ export default class Home extends React.Component{
         this.setState(prev => {return {...prev, sort : "", array : array, speed : 100, arrayBackup : array, maxArray : max, time : 0}});
         console.log("THE UNSORTED ARRAY", array);
     }
-
+    resetDummyArray = async() => {
+        let length = this.state.array.length;
+        await this.setState(prev => {return {...prev, merge : {...prev.merge, dummyArray : new Array(length).fill(0)}}});
+    }
     handleInputArray = (array) => {
         if(this.state.running){
             return false;
@@ -106,7 +112,9 @@ export default class Home extends React.Component{
         if(this.state.running){
             return;
         }
-        this.setState(prev => {return {...prev, running : true, sort : "merge"}});
+        Scroll.animateScroll.scrollToBottom();
+        let length = this.state.array.length;
+        this.setState(prev => {return {...prev, running : true, sort : "merge", merge : {...prev.merge, dummyArray : new Array(length).fill(0)}}});
         const animations = sortingAlgorithms.mergeSort([...this.state.array]);
         let array = [...this.state.array];
         let speed = this.state.speed;
@@ -136,7 +144,7 @@ export default class Home extends React.Component{
     }
     merge_sort = async(array, l, r, animations) => {
         while(this.state.pause){
-            await this.sleep(1000);
+            await this.sleep(1);
         }
         if (l>=r) { return; }
         const mid = Math.floor((l+r)/2);
@@ -150,32 +158,45 @@ export default class Home extends React.Component{
         // await this.sleep(speed*5);
         await this.show_div(animations);
         
+        await this.setState(prev => {return {...prev, merge: {...prev.merge, displayArr : []}}});
 
         let current = animations.mergedArrays.shift();
-        await this.setState(prev => {return {...prev, merge: {...prev.merge, displayArr : []}}});
-        // for(let i = 0; i < current.length; i++){
-        //     setTimeout(() => {
-        //         let x = this.state.merge.displayArr;
-        //         x.push(current[i]);
-        //         this.setState(prev => {return {...prev, merge : {...prev.merge, displayArr : x}}});
-        //     }, this.state.time)
-        //     this.setState(prev => {return {time : prev.time+speed}});
-        // }
-        // this.setState(prev => {return {time : prev.time+speed}});
-        // console.log("display arr : ", this.state.merge.displayArr);
-
+        
         let min = Math.min(...current);
         let max = Math.max(...current);
 
         for(let i = 0; i < current.length; i++){
-            current[i] = array[current[i]];
+            current[i] = this.state.array[current[i]];
         }
+        await console.log("curent : ", current);
         let j = 0;
+        let x = [];
+        let a = [...this.state.merge.dummyArray];
+        array = [...this.state.array];
         for(let i = min; i <= max; i++){
+            x.push(animations.merges.shift());
+            a[i] = current[j];
+            while(this.state.pause){
+                await this.sleep(1);
+            }
+            await this.setState(prev => { return { ...prev, merge: { ...prev.merge, merges: x, dummyArray: [...a] } }; });
+            // await console.log("this.state.merge.dummyArray", this.state.merge.dummyArray);
+            // await console.log("this.state.merge.merges", this.state.merge.merges);
             array[i] = current[j];
+            // await console.log("array : ", array);
+            // await console.log("a : ", a);
+            await this.sleep(this.state.speed*10);
             j++;
         }
-        await this.setState(prev => {return {...prev, array : array}});
+        x = [];
+        await this.resetDummyArray();
+        while(this.state.pause){
+            await this.sleep(1);
+        }
+        await this.setState(prev => {return {...prev, array : array, merge : {...prev.merge, merges : x}}});
+        // await console.log("muahaha", this.state.merge.dummyArray);
+        await this.sleep(this.state.speed*10);
+
         // await this.setState(prev => {return {time : prev.time+this.state.speed}});
         await this.sleep(this.state.speed*10);
         return;
@@ -286,7 +307,7 @@ export default class Home extends React.Component{
             let comparitor = array[animations[i][0]];
             for(let j = animations[i][0] - 1; j >= animations[i][1]; j--){
                 while(this.state.pause){
-                    await this.sleep(1000);
+                    await this.sleep(1);
                 }
                 array[j+1] = array[j];
                 array[j] = comparitor;
@@ -332,12 +353,12 @@ export default class Home extends React.Component{
         let l = [...this.state.array].length;
         for(let i = 0; i < l; i++){
             while(this.state.pause){
-                await this.sleep(1000);
+                await this.sleep(1);
             }
             let array = [...this.state.array];
             for(let j = 0; j < l - i - 1; j++){
                 while(this.state.pause){
-                    await this.sleep(1000);
+                    await this.sleep(1);
                 }
                 await this.setState(prev => {
                     return {
@@ -409,7 +430,7 @@ export default class Home extends React.Component{
     }
     quick_sort = async(l, r, animations) => {
         while(this.state.pause){
-            await this.sleep(1000);
+            await this.sleep(1);
         }
         if(l >= r){
             return;
@@ -437,6 +458,9 @@ export default class Home extends React.Component{
         const j = larger.length;
 
         for(let i = 0; i < activeArray.length; i++){
+            while(this.state.pause){
+                await this.sleep(1);
+            }
             if(smaller[0] === i){
                 let x = l + smaller.shift();
                 await this.setState(prev => {
@@ -495,6 +519,9 @@ export default class Home extends React.Component{
         // console.log("equals_final", equals_final);
         // console.log("larger_final", larger_final);
         await this.sleep(this.state.speed*10);
+        while(this.state.pause){
+            await this.sleep(1);
+        }
         await this.setState(prev => {
             return {
                 ...prev, 
@@ -536,7 +563,7 @@ export default class Home extends React.Component{
                 bubbleSort: this.bubbleSort
               }}
             />
-            <div className="container">
+            <div className="container" style={{height : `${sort === 'merge' ? "100vh" : ""}`}}>
               <div className="array">
                 {
                     array.map((value, index) => {
@@ -593,69 +620,27 @@ export default class Home extends React.Component{
                             <div
                             className={`array-bar ${index === bubble.current || index === selection.currentPointer ? "" : "normal-bar"}`}
                             key={index}
-                            style={{ height: `${value / this.state.maxArray * 100}%`, backgroundColor}}
+                            style={{ height: `${this.state.merge.merges.includes(index) ? 0 : value / this.state.maxArray * 100}%`, backgroundColor}}
                             />
                         );
                     })
                 }
               </div>
-              <div className="numbers">
-                {array.map((value, index) => {
-                        let backgroundColor = "";
-                        
-                        if (sort === 'selection') {
-                            backgroundColor = 
-                            index >= selection.smallestIndexStored
-                                ? "#f2cbcb84" 
-                                : index === selection.lastMax
-                                ? "#b7b7b7"
-                                : index === selection.currentPointer 
-                                ? "#f2cbcb84"
-                                : "#282c34";
-                        } else if (sort === 'merge') {
-                            backgroundColor =
-                            index >= merge.division[0] && index <= merge.division[1]
-                                ? "#9bb5a1"
-                                : index <= merge.division[2] && index > merge.division[1]
-                                ? "#9d9db7"
-                                : "#282c34";
-                        } else if (sort === 'quick') {
-                            backgroundColor =
-                            index === quick.partition
-                                ? "#ffffff"
-                                : quick.larger.includes(index)
-                                ? "#9d9db7"
-                                : quick.equals.includes(index)
-                                ? "#B99FA1"
-                                : quick.smaller.includes(index)
-                                ? "#9bb5a1"
-                                : index < quick.activeArray[0] || index > quick.activeArray[1]
-                                ? "#505050"
-                                : "#282c34";
-                        } else if (sort === 'insertion') {
-                            backgroundColor = 
-                                index === insertion.comparitorElement
-                                    ? "#f2cbcb84"
-                                    :  index === insertion.comparitorDestination
-                                    ? "#9bb5a1"
-                                    : "#282c34";
-                        } else if (sort === 'bubble') {
-                            backgroundColor = 
-                                index === bubble.current
-                                    ? "#f2cbcb84"
-                                    :  index >= bubble.settleStarts
-                                    ? "#f2cbcb84"
-                                    : "#282c34";
-                        } else {
-                            backgroundColor = "#282c34";
-                        }
-                        return(
-                            <div className="numberBubble" style={{backgroundColor}} key={index}>
-                                {value}
-                            </div>
-                        )
-                    })}
-              </div>
+              {sort === 'merge' &&
+                (<div className="merge-array">
+                    {
+                        merge.dummyArray.map((value, index) => {
+                            return (
+                                <div
+                                className={`array-bar normal-bar`}
+                                key={index}
+                                style={{ height: `${value / this.state.maxArray * 100}%`, backgroundColor : "#f7f7f7"}}
+                                />
+                            );
+                        })
+                    }
+                </div>)
+              }
             </div>
             <div className="legend" style={{transform : `${sort !== '' ? "translateY(0)" : 0}`}}>
                 {sort === 'quick' &&
