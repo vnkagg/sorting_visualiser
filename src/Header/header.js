@@ -57,23 +57,25 @@ export default class Header extends React.Component{
                             <div className="controlOption" onClick={this.props.restore}>Initial Array</div>
                         </div>
 
-                        {this.props.running && <div className="time" style ={{transform : `${this.props.running ? 'scale(100%)' : "scale(0)"}`}}>
-                            <div className = "icon" onClick={this.props.pause}>
-                                {this.props.statePause 
-                                ? (<FontAwesomeIcon icon={faPlay} style={{  color : '#f2cbcb84', 
-                                                                            fontSize : 30, 
-                                                                            fontWeight : 900}}/>) 
-                                : (<FontAwesomeIcon icon={faPause} style={  {color : '#f2cbcb84', 
-                                                                            fontSize : 30, 
-                                                                            fontWeight : 900}} />)}
-                            </div>
-                            <div>
-                                <div style={{paddingTop : 5}}>
-                                    <input  type="range" min="25" max="200" step="25"
-                                        value={this.state.slider} onChange={this.handleChange} />
+                        {this.props.running && 
+                            <div className="time" style ={{transform : `${this.props.running ? 'scale(100%)' : "scale(0)"}`}}>
+                                <div className = "icon" onClick={this.props.pause}>
+                                    {this.props.statePause 
+                                    ? (<FontAwesomeIcon icon={faPlay} style={{  color : '#f2cbcb84', 
+                                                                                fontSize : 30, 
+                                                                                fontWeight : 900}}/>) 
+                                    : (<FontAwesomeIcon icon={faPause} style={  {color : '#f2cbcb84', 
+                                                                                fontSize : 30, 
+                                                                                fontWeight : 900}} />)}
+                                </div>
+                                <div>
+                                    <div style={{paddingTop : 5}}>
+                                        <input  type="range" min="25" max="200" step="25"
+                                            value={this.state.slider} onChange={this.handleChange} />
+                                    </div>
                                 </div>
                             </div>
-                        </div>}
+                        }
                         {!this.props.running && 
                         <div className="arrayInput" style={{transform : `${!this.props.running ? 'scale(100%)' : 'scale(0)'}`}}>
                             <InputArrayComponent arrayHandling={this.handleInputArray}/>

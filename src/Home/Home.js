@@ -2,6 +2,8 @@ import React from "react";
 import Header from "../Header/header";
 import * as sortingAlgorithms from '../Algorithms/algorithms';
 import './home.css';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPause, faPlay } from "@fortawesome/free-solid-svg-icons";
 import * as Scroll from 'react-scroll';
 
 export default class Home extends React.Component{
@@ -639,6 +641,19 @@ export default class Home extends React.Component{
                             );
                         })
                     }
+                </div>)
+              }
+              {sort === 'merge' &&
+                (<div className="pause">
+                    <div className = "icon" onClick={this.setPause}>
+                                    {this.state.pause 
+                                    ? (<FontAwesomeIcon icon={faPlay} style={{  color : '#282c34', 
+                                                                                fontSize : 50, 
+                                                                                fontWeight : 900}}/>) 
+                                    : (<FontAwesomeIcon icon={faPause} style={  {color : '#282c34', 
+                                                                                fontSize : 50, 
+                                                                                fontWeight : 900}} />)}
+                                </div>
                 </div>)
               }
             </div>
