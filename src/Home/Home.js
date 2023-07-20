@@ -121,6 +121,9 @@ export default class Home extends React.Component{
         let array = [...this.state.array];
         let speed = this.state.speed;
         await this.merge_sort(array, 0, array.length-1, animations, speed);
+        await this.sleep(500);
+        await Scroll.animateScroll.scrollToTop();
+        await this.sleep(2000);
         this.setState(prev => {
             return {
                 ...prev,
@@ -643,20 +646,23 @@ export default class Home extends React.Component{
                     }
                 </div>)
               }
-              {sort === 'merge' &&
-                (<div className="pause">
-                    <div className = "icon" onClick={this.setPause}>
+            </div>
+            {sort === 'merge' &&
+                (<div className="floatingActionButton" onClick={this.setPause}>
+                    <div className="pauseHome">
+                    <div className = "iconHome">
                                     {this.state.pause 
-                                    ? (<FontAwesomeIcon icon={faPlay} style={{  color : '#282c34', 
-                                                                                fontSize : 50, 
+                                    ? (<FontAwesomeIcon icon={faPlay} style={{  color : '#f2cbcb84', 
+                                                                                fontSize : 40, 
                                                                                 fontWeight : 900}}/>) 
-                                    : (<FontAwesomeIcon icon={faPause} style={  {color : '#282c34', 
-                                                                                fontSize : 50, 
+                                    : (<FontAwesomeIcon icon={faPause} style={  {color : '#f2cbcb84', 
+                                                                                fontSize : 45, 
                                                                                 fontWeight : 900}} />)}
                                 </div>
-                </div>)
+                </div>
+                </div>
+                )
               }
-            </div>
             <div className="legend" style={{transform : `${sort !== '' ? "translateY(0)" : 0}`}}>
                 {sort === 'quick' &&
                     <div className="keys">

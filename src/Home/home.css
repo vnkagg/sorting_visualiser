@@ -46,6 +46,33 @@
   justify-content: space-between;
   /* transition : all 1s ease; */
 } 
+.floatingActionButton {
+  height: 70px;
+  width: 70px;
+  border-radius: 35px;
+  background-color: #282c34;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5) ;
+  cursor: pointer;
+}
+
+.pauseHome {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+.iconHome{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 .array{
     display: flex;
     flex-wrap: nowrap;
@@ -102,12 +129,7 @@
     align-items: center;
     box-shadow: 0px 0px 4px 0px #f2cbcb84;
   }
-  .pause{
-    height: 100vh;
-    position: fixed;
-    right: 5vw;
-    top: 50vh;
-  }
+  
   .text{
     margin: 2%;
     text-align: center;
