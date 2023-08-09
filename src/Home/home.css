@@ -26,6 +26,7 @@
   justify-content: center;
   align-self: flex-end;
 }
+
 .numberBubble{
   background-color: #282c34;
   color: #f2cbcbb8;
@@ -46,6 +47,7 @@
   justify-content: space-between;
   /* transition : all 1s ease; */
 } 
+
 .floatingActionButton {
   height: 70px;
   width: 70px;
@@ -82,9 +84,31 @@
     height: 90%;
     justify-content: center;
   }
+  .barcontainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 4vw;
+    margin: 0 0.5vw;
+    height: fit-content;
+    transition: height 0.2s ease;
+  }
+  .barcontainermerged{
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    width: 4vw;
+    margin: 0 0.5vw;
+    height: fit-content;
+    transition: height 0.2s ease;
+  }
+  .bar-number > span{
+    font-size: 10px;
+  }
   .array-bar{
     width: 4vw;
     margin: 0 0.5vw;
+    width: 100%;
     background-color: #282c34;
     border: 0px solid #f2cbcb84;
     /* transition: height 0.2s ease; */

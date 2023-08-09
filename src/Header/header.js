@@ -53,7 +53,7 @@ export default class Header extends React.Component{
                     <div className="list">
 
                         <div className="controlOptions">
-                            <div className="controlOption" onClick={this.props.reset}>Create new Array</div>
+                            <div className="controlOption" onClick={this.props.reset}>{this.props.sort_condition === "" ? "Create new Array" : "Terminate Sort"}</div>
                             <div className="controlOption" onClick={this.props.restore}>Initial Array</div>
                         </div>
 
@@ -107,7 +107,7 @@ function InputArrayComponent({arrayHandling}){
         let temp = inputArray;
         setisValid(true);
         for(let i = 0; i < array.length; i++){
-            if(array[i].match(/\D+/) !== null){
+            if(array[i].match(/.*\D+.*/) !== null){
                 setisValid(false);
                 break;
             } else {
@@ -115,7 +115,7 @@ function InputArrayComponent({arrayHandling}){
                 temp = array.slice(0, i+1);
             }
         }
-        console.log("array", array);
+        // console.log("array", array);
         if(isValid){
             setinputArray(temp);
         } 

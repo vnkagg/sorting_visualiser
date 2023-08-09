@@ -53,12 +53,13 @@ export const mergeSort = (array) => {
       animations.mergedArrays.push(mergedArr);
     }
   
-    let animations = { divisions: [], mergedArrays : [], merges : [] };
+    let animations = { divisions: [], mergedArrays : [], merges : [], sortedArray : [] };
     merge_sort(array, 0, array.length - 1, animations);
     let last = [0, (array.length/2) -1, array.length-1]
     animations.divisions.push(last);
-    console.log("sorted array", array);
-    console.log("merged arrays algo.js",animations.mergedArrays);
+    animations.sortedArray = array;
+    // console.log("sorted array", array);
+    // console.log("merged arrays algo.js",animations.mergedArrays);
     return animations;
   };
   

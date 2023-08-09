@@ -19,6 +19,7 @@ export default class Home extends React.Component{
             customArray : true,
             arrayBackup : [],
             maxArray : -1,
+            hasBeenTerminated : true,
             selection : {
                 lastMax : -1,
                 currentPointer : -1,
@@ -55,9 +56,9 @@ export default class Home extends React.Component{
                 ...prev,
                 pause : !prev.pause}
         });
-        console.log("pause state set setState");
+        // console.log("pause state set setState");
         while(this.state.pause){
-            console.log("pause added");
+            // console.log("pause added");
             await this.sleep(1000);
         }
     }
@@ -68,7 +69,7 @@ export default class Home extends React.Component{
                 speed : value
             }}, 
             () => {
-                console.log("speed set to : ",this.state.speed);
+                console.log("speed set to : ", 1 * 100/this.state.speed);
             }
         );
     }
@@ -79,16 +80,21 @@ export default class Home extends React.Component{
         return Math.floor(min + Math.random() * (max - min)); 
     }
     resetArray = () => {
-        if(this.state.running){
-            return;
+        // if(this.state.running){
+        //     return;
+        // }
+        if(this.state.hasBeenTerminated){
+            // this.setState(prev => {return {...prev, sort : "", hasBeenTerminated : false }});
+            let array = [];
+            for(let i = 0; i < 32; i++){
+                array.push(this.randIntFromRange(10, 100));
+            }
+            let max = Math.max(...array);
+            this.setState({sort : "", array : array, speed : 100, arrayBackup : array, maxArray : max, time : 0});
+            console.log("THE UNSORTED ARRAY", array);
+        } else {
+            this.setState(prev => {return {...prev, hasBeenTerminated : true }});
         }
-        let array = [];
-        for(let i = 0; i < 32; i++){
-            array.push(this.randIntFromRange(10, 100));
-        }
-        let max = Math.max(...array);
-        this.setState(prev => {return {...prev, sort : "", array : array, speed : 100, arrayBackup : array, maxArray : max, time : 0}});
-        console.log("THE UNSORTED ARRAY", array);
     }
     resetDummyArray = async() => {
         let length = this.state.array.length;
@@ -114,13 +120,25 @@ export default class Home extends React.Component{
         if(this.state.running){
             return;
         }
-        Scroll.animateScroll.scrollToBottom();
+        await Scroll.animateScroll.scrollToBottom();
         let length = this.state.array.length;
-        this.setState(prev => {return {...prev, running : true, sort : "merge", merge : {...prev.merge, dummyArray : new Array(length).fill(0)}}});
+        await this.setState(prev => {return {...prev, running : true, hasBeenTerminated : false, sort : "merge", merge : {...prev.merge, dummyArray : new Array(length).fill(0)}}});
         const animations = sortingAlgorithms.mergeSort([...this.state.array]);
+        console.log("THE SORTED ARRAY : ", animations.sortedArray);
         let array = [...this.state.array];
         let speed = this.state.speed;
         await this.merge_sort(array, 0, array.length-1, animations, speed);
+        if(this.state.hasBeenTerminated){
+            this.setState(prev => {
+                return {
+                    ...prev,
+                    running : false,
+                    sort : "",
+                    hasBeenTerminated : true
+                }
+            })
+            return;
+        }
         await this.sleep(500);
         await Scroll.animateScroll.scrollToTop();
         await this.sleep(2000);
@@ -128,7 +146,8 @@ export default class Home extends React.Component{
             return {
                 ...prev,
                 running : false,
-                sort : ""
+                sort : "",
+                hasBeenTerminated : true
             }
         })
       };
@@ -145,24 +164,64 @@ export default class Home extends React.Component{
             }}
         );
         await this.setState(prev => {return {...prev, time : prev.time+speed*5}});
+        if(this.state.hasBeenTerminated){
+            return;
+        }
         await this.sleep(speed*5);
     }
     merge_sort = async(array, l, r, animations) => {
         while(this.state.pause){
             await this.sleep(1);
         }
+        if(this.state.hasBeenTerminated){
+            return;
+        }
         if (l>=r) { return; }
         const mid = Math.floor((l+r)/2);
-
+        while(this.state.pause){
+            await this.sleep(1);
+        }
+        if(this.state.hasBeenTerminated){
+            return;
+        }
         await this.show_div(animations);
+        while(this.state.pause){
+            await this.sleep(1);
+        }
+        if(this.state.hasBeenTerminated){
+            return;
+        }
         await this.merge_sort(array, l, mid, animations);
         // await this.sleep(speed*5);
+        while(this.state.pause){
+            await this.sleep(1);
+        }
+        if(this.state.hasBeenTerminated){
+            return;
+        }
         await this.show_div(animations);
         // await this.sleep(speed*10);
+        while(this.state.pause){
+            await this.sleep(1);
+        }
+        if(this.state.hasBeenTerminated){
+            return;
+        }
         await this.merge_sort(array, mid+1, r, animations);
         // await this.sleep(speed*5);
+        while(this.state.pause){
+            await this.sleep(1);
+        }
+        if(this.state.hasBeenTerminated){
+            return;
+        }
         await this.show_div(animations);
-        
+        while(this.state.pause){
+            await this.sleep(1);
+        }
+        if(this.state.hasBeenTerminated){
+            return;
+        }
         await this.setState(prev => {return {...prev, merge: {...prev.merge, displayArr : []}}});
 
         let current = animations.mergedArrays.shift();
@@ -173,7 +232,7 @@ export default class Home extends React.Component{
         for(let i = 0; i < current.length; i++){
             current[i] = this.state.array[current[i]];
         }
-        await console.log("curent : ", current);
+        // await console.log("curent : ", current);
         let j = 0;
         let x = [];
         let a = [...this.state.merge.dummyArray];
@@ -184,25 +243,44 @@ export default class Home extends React.Component{
             while(this.state.pause){
                 await this.sleep(1);
             }
+            // if(this.state.hasBeenTerminated){
+            //     return;
+            // }
             await this.setState(prev => { return { ...prev, merge: { ...prev.merge, merges: x, dummyArray: [...a] } }; });
             // await console.log("this.state.merge.dummyArray", this.state.merge.dummyArray);
             // await console.log("this.state.merge.merges", this.state.merge.merges);
             array[i] = current[j];
             // await console.log("array : ", array);
             // await console.log("a : ", a);
-            await this.sleep(this.state.speed*10);
+            if(!this.state.hasBeenTerminated){
+                // return;
+                await this.sleep(this.state.speed*10);
+            }
+            // await this.sleep(this.state.speed*10);
             j++;
         }
         x = [];
-        await this.resetDummyArray();
         while(this.state.pause){
             await this.sleep(1);
         }
+        // if(this.state.hasBeenTerminated){
+        //     return;
+        // }
+        await this.resetDummyArray();
+        // if(this.state.hasBeenTerminated){
+        //     return;
+        // }
         await this.setState(prev => {return {...prev, array : array, merge : {...prev.merge, merges : x}}});
         // await console.log("muahaha", this.state.merge.dummyArray);
+        if(this.state.hasBeenTerminated){
+            return;
+        }
         await this.sleep(this.state.speed*10);
 
         // await this.setState(prev => {return {time : prev.time+this.state.speed}});
+        if(this.state.hasBeenTerminated){
+            return;
+        }
         await this.sleep(this.state.speed*10);
         return;
         // setTimeout(() => {
@@ -217,6 +295,7 @@ export default class Home extends React.Component{
             return {
                 ...prev,
                 running : true,
+                hasBeenTerminated :false,
                 sort : "selection"}
         });
         const result = sortingAlgorithms.selectionSort([...this.state.array]);
@@ -246,7 +325,18 @@ export default class Home extends React.Component{
                     }
                 });
                 if(j === currentData[0]){
-                    await this.sleep(this.state.speed*9);
+                    if(!this.state.hasBeenTerminated){
+                        await this.sleep(this.state.speed*9);
+                    } else {
+                        this.setState(prev => {
+                            return {
+                                ...prev, 
+                                running : false,
+                                sort : ""
+                            }
+                        })
+                        return;
+                    }
                     let x = currentData.shift();
                     await this.setState(prev => {
                         return {
@@ -258,9 +348,31 @@ export default class Home extends React.Component{
                             }
                         }
                     }); 
-                    await this.sleep(this.state.speed*6);
+                    if(!this.state.hasBeenTerminated){
+                        await this.sleep(this.state.speed*6);
+                    } else {
+                        this.setState(prev => {
+                            return {
+                                ...prev, 
+                                running : false,
+                                sort : ""
+                            }
+                        })
+                        return;
+                    }
                 } else {
-                    await this.sleep(this.state.speed*4);
+                    if(!this.state.hasBeenTerminated){
+                        await this.sleep(this.state.speed*4);
+                    } else {
+                        this.setState(prev => {
+                            return {
+                                ...prev, 
+                                running : false,
+                                sort : ""
+                            }
+                        })
+                        return;
+                    }
                 }
             }
             let temp = array[l - i -1];
@@ -276,7 +388,18 @@ export default class Home extends React.Component{
                     }
                 }
             });
-            await this.sleep(this.state.speed*5);
+            if(!this.state.hasBeenTerminated){
+                await this.sleep(this.state.speed*5);
+            } else {
+                this.setState(prev => {
+                    return {
+                        ...prev, 
+                        running : false,
+                        sort : ""
+                    }
+                })
+                return;
+            }
         }
         this.setState(prev => {
             return {
@@ -290,7 +413,7 @@ export default class Home extends React.Component{
         if(this.state.running){
             return;
         }
-        this.setState(prev => {return {...prev, running : true, sort : "insertion"}});
+        this.setState(prev => {return {...prev, running : true, hasBeenTerminated : false, sort : "insertion"}});
         const result = sortingAlgorithms.insertionSort([...this.state.array]);
         // this.setState({array : result.sortedArray});
         const animations = result.animations;
@@ -307,7 +430,19 @@ export default class Home extends React.Component{
                     }
                 }
             });
-            await this.sleep(this.state.speed*10);
+            
+            if(!this.state.hasBeenTerminated){
+                await this.sleep(this.state.speed*10);
+            } else {
+                this.setState(prev => {
+                    return {
+                        ...prev, 
+                        running : false,
+                        sort : ""
+                    }
+                })
+                return;
+            }
             let array = this.state.array;
             let comparitor = array[animations[i][0]];
             for(let j = animations[i][0] - 1; j >= animations[i][1]; j--){
@@ -334,9 +469,31 @@ export default class Home extends React.Component{
                         }
                     });
                 }
-                await this.sleep(this.state.speed*3);
+                if(!this.state.hasBeenTerminated){
+                    await this.sleep(this.state.speed*3);
+                } else {
+                    this.setState(prev => {
+                        return {
+                            ...prev, 
+                            running : false,
+                            sort : ""
+                        }
+                    })
+                    return;
+                }
             }
-            await this.sleep(this.state.speed*10);
+            if(!this.state.hasBeenTerminated){
+                await this.sleep(this.state.speed*10);
+            } else {
+                this.setState(prev => {
+                    return {
+                        ...prev, 
+                        running : false,
+                        sort : ""
+                    }
+                })
+                return;
+            }
         }
         await this.setState(prev => {
             return {
@@ -354,7 +511,7 @@ export default class Home extends React.Component{
         if(this.state.running){
             return;
         }
-        this.setState(prev => {return {...prev, running : true, sort : "bubble"}});
+        this.setState(prev => {return {...prev, running : true, hasBeenTerminated : false, sort : "bubble"}});
         let l = [...this.state.array].length;
         for(let i = 0; i < l; i++){
             while(this.state.pause){
@@ -380,6 +537,16 @@ export default class Home extends React.Component{
                     array[j+1] = array[j];
                     array[j] = x;  
                 }
+                if(this.state.hasBeenTerminated){
+                    this.setState(prev => {
+                        return {
+                            ...prev, 
+                            running : false,
+                            sort : ""
+                        }
+                    })
+                    return;
+                }
                 await this.sleep(this.state.speed*2);
             }
             await this.setState(prev => {
@@ -391,6 +558,16 @@ export default class Home extends React.Component{
                     }
                 }
             });
+            if(this.state.hasBeenTerminated){
+                this.setState(prev => {
+                    return {
+                        ...prev, 
+                        running : false,
+                        sort : ""
+                    }
+                })
+                return;
+            }
             await this.sleep(this.state.speed*2);
         }
         this.setState(prev => {
@@ -405,8 +582,8 @@ export default class Home extends React.Component{
         if(this.state.running){
             return;
         }
-        this.setState(prev => {
-            return {...prev, running : true, sort : "quick"}
+        await this.setState(prev => {
+            return {...prev, running : true, hasBeenTerminated : false, sort : "quick"}
         });
         let array = [...this.state.array];
         let result = sortingAlgorithms.quickSort(array);
@@ -421,13 +598,8 @@ export default class Home extends React.Component{
                     larger : [],
                     partition : -1,
                     activeArray : [0, 31]
-                }
-
-            }
-        })
-        this.setState(prev => {
-            return {
-                ...prev, 
+                },
+                hasBeenTerminated : true,
                 running : false,
                 sort : ""
             }
@@ -438,6 +610,9 @@ export default class Home extends React.Component{
             await this.sleep(1);
         }
         if(l >= r){
+            return;
+        }
+        if(this.state.hasBeenTerminated){
             return;
         }
         await this.setState(prev => {
@@ -495,7 +670,10 @@ export default class Home extends React.Component{
                             larger : [...prev.quick.larger, x]}}
                         });
             }
-            await this.sleep(this.state.speed);
+            if(!this.state.hasBeenTerminated){
+                // return;
+                await this.sleep(this.state.speed);
+            }
         }
         // console.log("smaller : ", smaller);
         // console.log("equals : ", equals);
@@ -523,7 +701,10 @@ export default class Home extends React.Component{
         // console.log("smaller_final", smaller_final);
         // console.log("equals_final", equals_final);
         // console.log("larger_final", larger_final);
-        await this.sleep(this.state.speed*10);
+        if(!this.state.hasBeenTerminated){
+            // return;
+            await this.sleep(this.state.speed*10);
+        }
         while(this.state.pause){
             await this.sleep(1);
         }
@@ -539,9 +720,21 @@ export default class Home extends React.Component{
                     partition : equals_final[0]
                 }
             }});
-        await this.sleep(this.state.speed * 10);
+        if(!this.state.hasBeenTerminated){
+            // return;
+            await this.sleep(this.state.speed * 10);
+        }    
+        if(this.state.hasBeenTerminated){
+            return;
+        }
         await this.quick_sort(l, l + i - 1, animations);
-        await this.sleep(this.state.speed);
+        if(!this.state.hasBeenTerminated){
+            // return;
+            await this.sleep(this.state.speed * 10);
+        }    
+        if(this.state.hasBeenTerminated){
+            return;
+        }
         await this.quick_sort(r - j + 1, r, animations);
         return;
     }
@@ -554,6 +747,7 @@ export default class Home extends React.Component{
             <Header
               reset={this.resetArray}
               speed={this.setSpeed}
+              sort_condition={this.state.sort}
               statePause={this.state.pause}
               running = {this.state.running}
               restore={this.restore}
@@ -627,6 +821,7 @@ export default class Home extends React.Component{
                             key={index}
                             style={{ height: `${this.state.merge.merges.includes(index) ? 0 : value / this.state.maxArray * 100}%`, backgroundColor}}
                             />
+                            // <div style={{color : "#3f3f3f"}}>{this.state.merge.merges.includes(index) ? "" : value}</div>
                         );
                     })
                 }
@@ -636,12 +831,17 @@ export default class Home extends React.Component{
                     {
                         merge.dummyArray.map((value, index) => {
                             return (
-                                <div
-                                className={`array-bar normal-bar`}
-                                key={index}
-                                style={{ height: `${value / this.state.maxArray * 100}%`, backgroundColor : "#f7f7f7"}}
-                                />
-                            );
+                                // <div className="barcontainermerged"
+                                // style={{ height: `${value / this.state.maxArray * 100}%`, backgroundColor : "#f7f7f7"}}
+                                // >
+                                    <div
+                                    className={`array-bar normal-bar`}
+                                    key={index}
+                                    style={{ height: `${value / this.state.maxArray * 100}%`, backgroundColor : "#f7f7f7"}}
+                                    />
+                                    // <div>{value === 0 ? "" : value}</div>
+                                // </div>
+                                )
                         })
                     }
                 </div>)
