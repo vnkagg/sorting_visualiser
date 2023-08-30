@@ -511,7 +511,7 @@ export default class Home extends React.Component{
         if(this.state.running){
             return;
         }
-        this.setState(prev => {return {...prev, running : true, hasBeenTerminated : false, sort : "bubble"}});
+        this.setState(prev => {return {...prev, running : true, hasBeenTerminated : false, sort : "bubble", bubble : {}}});
         let l = [...this.state.array].length;
         for(let i = 0; i < l; i++){
             while(this.state.pause){
@@ -708,6 +708,9 @@ export default class Home extends React.Component{
         while(this.state.pause){
             await this.sleep(1);
         }
+        if(this.state.hasBeenTerminated){
+            return;
+        }
         await this.setState(prev => {
             return {
                 ...prev, 
@@ -816,12 +819,14 @@ export default class Home extends React.Component{
                         }
             
                         return (
-                            <div
-                            className={`array-bar ${index === bubble.current || index === selection.currentPointer ? "" : "normal-bar"}`}
-                            key={index}
-                            style={{ height: `${this.state.merge.merges.includes(index) ? 0 : value / this.state.maxArray * 100}%`, backgroundColor}}
-                            />
-                            // <div style={{color : "#3f3f3f"}}>{this.state.merge.merges.includes(index) ? "" : value}</div>
+                            <div className="bar-value-set">
+                                <div
+                                    className={`array-bar ${index === bubble.current || index === selection.currentPointer ? "" : "normal-bar"}`}
+                                    key={index}
+                                    style={{ height: `${this.state.merge.merges.includes(index) ? 0 : value / this.state.maxArray * 100}%`, backgroundColor}}
+                                />
+                                <div className="bar-value">{this.state.merge.merges.includes(index) ? "" : value}</div>
+                            </div>
                         );
                     })
                 }
@@ -831,16 +836,15 @@ export default class Home extends React.Component{
                     {
                         merge.dummyArray.map((value, index) => {
                             return (
-                                // <div className="barcontainermerged"
-                                // style={{ height: `${value / this.state.maxArray * 100}%`, backgroundColor : "#f7f7f7"}}
-                                // >
+                                <div className="bar-value-set-merged">
                                     <div
                                     className={`array-bar normal-bar`}
                                     key={index}
                                     style={{ height: `${value / this.state.maxArray * 100}%`, backgroundColor : "#f7f7f7"}}
                                     />
-                                    // <div>{value === 0 ? "" : value}</div>
-                                // </div>
+                                    <div className="bar-value">{value ? value : ""}</div>
+                                </div>
+                                    
                                 )
                         })
                     }

@@ -105,13 +105,29 @@
   .bar-number > span{
     font-size: 10px;
   }
+  .bar-value{
+    height: 20px;
+    width: 100%;
+  }
   .array-bar{
-    width: 4vw;
-    margin: 0 0.5vw;
     width: 100%;
     background-color: #282c34;
     border: 0px solid #f2cbcb84;
     /* transition: height 0.2s ease; */
+  }
+  .bar-value-set{
+    width: 4vw;
+    margin: 0 0.5vw;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .bar-value-set-merged{
+    width: 4vw;
+    margin: 0 0.5vw;
+    height: 100%;
+    display: flex;
+    flex-direction: column-reverse;
   }
   .merge-array{
     display: flex;
